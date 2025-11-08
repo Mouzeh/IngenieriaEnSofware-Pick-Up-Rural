@@ -4,21 +4,30 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 from productos.views import lista_productos
+from pedidos.views import lista_pedidos
+from usuarios.views import login_usuario, registro_usuario, logout_usuario, logout_confirmacion  # Agregar aquí
 
 urlpatterns = [
     # Página principal y estado API
     path('', views.home, name='home'),
     path('api/', views.api_status, name='api_status'),
-
-    # Catálogo de productos
+    
+    # Autenticación personalizada
+    path('login/', login_usuario, name='login'),
+    path('registro/', registro_usuario, name='registro'),
+    path('logout/', logout_usuario, name='logout'),
+    path('logout/confirmacion/', logout_confirmacion, name='logout_confirmacion'),  # Cambiar aquí
+    
+    # URLs de autenticación de Django (backup/alternativa)
+    path('accounts/', include('django.contrib.auth.urls')),
+    
+    # Catálogos
     path('productos/', lista_productos, name='catalogo_productos'),
-
+    path('pedidos/', lista_pedidos, name='catalogo_pedidos'),
+    
     # Panel de administración
     path('admin/', admin.site.urls),
-
-    # URLs de autenticación de Django
-    path('accounts/', include('django.contrib.auth.urls')),
-
+    
     # APIs de la aplicación
     path('api/usuarios/', include('usuarios.urls')),
     path('api/productos/', include('productos.urls')),

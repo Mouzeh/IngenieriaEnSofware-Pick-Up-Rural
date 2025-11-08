@@ -4,13 +4,23 @@ from django.views.decorators.http import require_http_methods
 from .models import Pedido
 
 @require_http_methods(["GET"])
+def api_pedidos_json_viewer(request):
+    """Vista HTML para visualizar el JSON de pedidos"""
+    return render(request, 'api_pedidos_json.html')
+
+@require_http_methods(["GET"])
 def lista_pedidos(request):
     """Listar todos los pedidos"""
-    pedidos = Pedido.objects.select_related('cliente', 'negocio').values(
-        'id', 'numero_pedido', 'cliente__username', 'negocio__nombre', 
-        'estado', 'metodo_entrega', 'total', 'fecha_pedido'
-    )
-    return JsonResponse({'pedidos': list(pedidos)})
+    # Si es una solicitud AJAX o API, devolver JSON
+    if request.headers.get('Accept') == 'application/json' or 'api' in request.path:
+        pedidos = Pedido.objects.select_related('cliente', 'negocio').values(
+            'id', 'numero_pedido', 'cliente__username', 'negocio__nombre', 
+            'estado', 'metodo_entrega', 'total', 'fecha_pedido'
+        )
+        return JsonResponse({'pedidos': list(pedidos)})
+    
+    # Si es una solicitud normal, mostrar la página HTML
+    return render(request, 'catalogo_pedidos.html')
 
 @require_http_methods(["POST"])
 def crear_pedido(request):

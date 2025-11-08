@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrarse - Pick Up Rural</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            margin: 40px 0;
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .register-header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .register-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .user-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .user-type {
+            padding: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-type:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+        
+        .user-type.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        
+        .user-type-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .user-type-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .user-type-desc {
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .form-group label .required {
+            color: #ef4444;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #999;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+        
+        .strength-weak { background: #ef4444; width: 33%; }
+        .strength-medium { background: #f59e0b; width: 66%; }
+        .strength-strong { background: #10b981; width: 100%; }
+        
+        .password-hint {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .terms-checkbox {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .terms-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        
+        .terms-checkbox label {
+            font-size: 0.9em;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .terms-checkbox a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .btn-register:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-register:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .login-link {
+            text-align: center;
+            color: #666;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/login/" class="back-link">← Volver al login</a>
+        
+        <div class="register-card">
+            <div class="register-header">
+                <h1>🎉 Crear Cuenta</h1>
+                <p>Únete a Pick Up Rural</p>
+            </div>
+            
+            <div id="alert" class="alert"></div>
+            
+            <div class="user-type-selector">
+                <div class="user-type active" data-type="cliente">
+                    <div class="user-type-icon">🛍️</div>
+                    <div class="user-type-title">Cliente</div>
+                    <div class="user-type-desc">Realizar pedidos</div>
+                </div>
+                <div class="user-type" data-type="comerciante">
+                    <div class="user-type-icon">🏪</div>
+                    <div class="user-type-title">Comerciante</div>
+                    <div class="user-type-desc">Gestionar negocio</div>
+                </div>
+            </div>
+            
+            <form id="registerForm">
+                {% csrf_token %}
+                <input type="hidden" id="tipo_usuario" name="tipo_usuario" value="cliente">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">Nombre <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="first_name" name="first_name" placeholder="Juan" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last_name">Apellido <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="last_name" name="last_name" placeholder="Pérez" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Usuario <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">@</span>
+                        <input type="text" id="username" name="username" placeholder="usuario123" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo Electrónico <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📧</span>
+                        <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefono">Teléfono <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📱</span>
+                        <input type="tel" id="telefono" name="telefono" placeholder="+56 9 1234 5678" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrength"></div>
+                    </div>
+                    <div class="password-hint" id="passwordHint">Usa mayúsculas, minúsculas y números</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password2">Confirmar Contraseña <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password2" name="password2" placeholder="Repite tu contraseña" required>
+                    </div>
+                </div>
+                
+                <div class="terms-checkbox">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">
+                        Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-register" id="submitBtn">Crear Cuenta</button>
+            </form>
+            
+            <div class="login-link">
+                ¿Ya tienes cuenta? <a href="/login/">Inicia sesión aquí</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Selector de tipo de usuario
+        document.querySelectorAll('.user-type').forEach(type => {
+            type.addEventListener('click', function() {
+                document.querySelectorAll('.user-type').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tipo_usuario').value = this.dataset.type;
+            });
+        });
+        
+        // Validación de fortaleza de contraseña
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            const hint = document.getElementById('passwordHint');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            strengthBar.className = 'password-strength-bar';
+            
+            if (strength <= 1) {
+                strengthBar.classList.add('strength-weak');
+                hint.textContent = '❌ Contraseña débil';
+                hint.style.color = '#ef4444';
+            } else if (strength <= 3) {
+                strengthBar.classList.add('strength-medium');
+                hint.textContent = '⚠️ Contraseña media';
+                hint.style.color = '#f59e0b';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                hint.textContent = '✅ Contraseña fuerte';
+                hint.style.color = '#10b981';
+            }
+        });
+        
+        // Validación de coincidencia de contraseñas
+        document.getElementById('password2').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const password2 = this.value;
+            
+            if (password2 && password !== password2) {
+                this.style.borderColor = '#ef4444';
+            } else {
+                this.style.borderColor = '#10b981';
+            }
+        });
+        
+        // Envío del formulario
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const password2 = document.getElementById('password2').value;
+            const alert = document.getElementById('alert');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Validar contraseñas
+            if (password !== password2) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ Las contraseñas no coinciden';
+                alert.style.display = 'block';
+                return;
+            }
+            
+            // Validar términos
+            if (!document.getElementById('terms').checked) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ Debes aceptar los términos y condiciones';
+                alert.style.display = 'block';
+                return;
+            }
+            
+            const formData = new FormData(this);
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creando cuenta...';
+            
+            try {
+                const response = await fetch('/registro/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert.className = 'alert alert-success';
+                    alert.textContent = '✅ Cuenta creada exitosamente. Redirigiendo...';
+                    alert.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login/?registered=true';
+                    }, 2000);
+                } else {
+                    alert.className = 'alert alert-error';
+                    alert.textContent = '❌ ' + (data.error || 'Error al crear la cuenta');
+                    alert.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Crear Cuenta';
+                }
+            } catch (error) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
+                alert.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Crear Cuenta';
+            }
+        });
+    </script>
+</body>
+</html>

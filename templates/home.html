@@ -179,6 +179,70 @@
             font-size: 3em;
             margin-bottom: 10px;
         }
+
+        .user-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-info span {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .logout-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+        .logout-btn {
+            padding: 8px 15px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .login-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .user-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -186,6 +250,24 @@
         <div class="header">
             <h1>🛒 Pick Up Rural</h1>
             <p>Sistema de Gestión de Pedidos para Negocios Rurales</p>
+            {% if user.is_authenticated %}
+            <div class="user-info">
+                <span>👤 {{ user.get_full_name|default:user.username }}</span>
+                <span style="color: #666;">|</span>
+                <span style="color: #666;">{{ user.get_tipo_usuario_display }}</span>
+                <span style="color: #666;">|</span>
+                <form method="post" action="{% url 'logout' %}" class="logout-form" id="logout-form">
+                    {% csrf_token %}
+                    <button type="button" onclick="confirmarLogout()" class="logout-btn">
+                        🚪 Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div style="margin-top: 15px;">
+                <a href="{% url 'login' %}" class="login-btn">Iniciar Sesión</a>
+            </div>
+            {% endif %}
         </div>
         
         <div class="stats-grid">
@@ -235,9 +317,12 @@
         <div class="actions">
             <a href="/admin/" class="btn">🔧 Panel Admin</a>
             <a href="/api/productos/agregar/" class="btn">➕ Agregar Producto</a>
-            <a href="/api/" class="btn">🔌 Estado API</a>
             <a href="/productos/" class="btn">📦 Ver Catálogo</a>
-            <a href="/api/pedidos/" class="btn">📋 Ver Pedidos</a>
+            <a href="/pedidos/" class="btn">📋 Gestión Pedidos</a>
+            <a href="/api/" class="btn">🔌 Estado API</a>
+            {% if user.is_authenticated %}
+            <a href="/api/pedidos/json/" class="btn">💻 API JSON</a>
+            {% endif %}
         </div>
         
         <div class="recent-orders">
@@ -278,5 +363,27 @@
             </p>
         </div>
     </div>
+
+    <script>
+        function confirmarLogout() {
+            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
+                document.getElementById('logout-form').submit();
+            }
+        }
+
+        // Prevenir envío múltiple del formulario
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutForm = document.getElementById('logout-form');
+            if (logoutForm) {
+                logoutForm.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="button"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '⏳ Cerrando sesión...';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

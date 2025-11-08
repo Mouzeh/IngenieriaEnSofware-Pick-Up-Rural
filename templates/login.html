@@ -23,31 +23,89 @@
         
         .login-container {
             background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1000px;
             width: 100%;
-            max-width: 400px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
         }
         
-        .logo {
-            text-align: center;
+        .login-left {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        
+        .login-left p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.6;
             margin-bottom: 30px;
         }
         
-        .logo h1 {
-            color: #667eea;
-            font-size: 28px;
+        .features {
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-text h3 {
             margin-bottom: 5px;
         }
         
-        .logo p {
+        .feature-text p {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin: 0;
+        }
+        
+        .login-right {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .login-header h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
             color: #666;
-            font-size: 14px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .form-group label {
@@ -55,99 +113,378 @@
             margin-bottom: 8px;
             color: #333;
             font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #999;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 15px 15px 15px 45px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
         
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .remember-me label {
+            font-size: 0.9em;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .forgot-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .forgot-link:hover {
+            text-decoration: underline;
         }
         
         .btn-login {
             width: 100%;
             padding: 15px;
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            margin-bottom: 20px;
         }
         
         .btn-login:hover {
-            background: #5568d3;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
         
-        .error-message {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border: 1px solid #fecaca;
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #999;
+            position: relative;
+            font-size: 0.9em;
         }
         
         .register-link {
             text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
+            color: #666;
         }
         
         .register-link a {
             color: #667eea;
             text-decoration: none;
+            font-weight: bold;
         }
         
         .register-link a:hover {
             text-decoration: underline;
         }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .demo-credentials {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.85em;
+        }
+        
+        .demo-credentials h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .demo-credentials p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .demo-credentials strong {
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .login-left {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">
+        <div class="login-left">
             <h1>🛒 Pick Up Rural</h1>
-            <p>Inicia sesión en tu cuenta</p>
+            <p>Sistema de gestión de pedidos para negocios rurales</p>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">📦</div>
+                    <div class="feature-text">
+                        <h3>Gestión de Productos</h3>
+                        <p>Control completo de inventario</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-text">
+                        <h3>Pedidos en Tiempo Real</h3>
+                        <p>Seguimiento instantáneo</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-text">
+                        <h3>Pagos Seguros</h3>
+                        <p>Múltiples métodos de pago</p>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        {% if form.errors %}
-        <div class="error-message">
-            Usuario o contraseña incorrectos. Por favor intenta nuevamente.
-        </div>
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="username">Usuario</label>
-                <input type="text" id="username" name="username" required autofocus>
+        <div class="login-right">
+            <div class="login-header">
+                <h2>¡Bienvenido!</h2>
+                <p>Inicia sesión para continuar</p>
             </div>
             
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required>
+            <div id="alert" class="alert"></div>
+            
+            <form id="loginForm">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Ingresa tu usuario" 
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Ingresa tu contraseña" 
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Recordarme</label>
+                    </div>
+                    <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+                </div>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Iniciando sesión...</p>
+                </div>
+                
+                <button type="submit" class="btn-login">Iniciar Sesión</button>
+            </form>
+            
+            <div class="divider">
+                <span>o</span>
             </div>
             
-            <button type="submit" class="btn-login">🔐 Iniciar Sesión</button>
-        </form>
-        
-        <div class="register-link">
-            <p>¿No tienes cuenta? <a href="/admin/">Contacta al administrador</a></p>
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="/registro/">Regístrate aquí</a>
+            </div>
+            
+            <div class="demo-credentials">
+                <h4>🔑 Credenciales de Prueba</h4>
+                <p><strong>Comerciante:</strong> comerciante1 / comerciante123</p>
+                <p><strong>Cliente:</strong> cliente1 / cliente123</p>
+            </div>
         </div>
     </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const alert = document.getElementById('alert');
+            const loading = document.getElementById('loading');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // Mostrar loading
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            alert.style.display = 'none';
+            
+            try {
+                const response = await fetch('/login/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+                
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                
+                if (response.ok) {
+                    alert.className = 'alert alert-success';
+                    alert.textContent = '✅ Inicio de sesión exitoso. Redirigiendo...';
+                    alert.style.display = 'block';
+                    
+                    // Redirigir después de 1 segundo
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/';
+                    }, 1000);
+                } else {
+                    alert.className = 'alert alert-error';
+                    alert.textContent = '❌ ' + (data.error || 'Usuario o contraseña incorrectos');
+                    alert.style.display = 'block';
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
+                alert.style.display = 'block';
+            }
+        });
+        
+        // Auto-completar para demo (opcional)
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const demo = urlParams.get('demo');
+            
+            if (demo === 'comerciante') {
+                document.getElementById('username').value = 'comerciante1';
+                document.getElementById('password').value = 'comerciante123';
+            } else if (demo === 'cliente') {
+                document.getElementById('username').value = 'cliente1';
+                document.getElementById('password').value = 'cliente123';
+            }
+        });
+    </script>
 </body>
 </html>

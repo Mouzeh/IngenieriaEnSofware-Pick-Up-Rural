@@ -121,6 +121,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuración de autenticación
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
+# Configuración de URLs de autenticación
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Para que el logout funcione con POST
+CSRF_COOKIE_HTTPONLY = False
+
 # Configuración de CORS
 CORS_ALLOW_ALL_ORIGINS = True  # Solo para desarrollo
 CORS_ALLOWED_ORIGINS = [

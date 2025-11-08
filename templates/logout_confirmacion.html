@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión Cerrada - Pick Up Rural</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .logout-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logout-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: wave 1s ease-in-out;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        .logout-container h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .logout-container p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #10b981;
+        }
+        
+        .warning-message {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #f59e0b;
+        }
+        
+        .redirect-timer {
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .logout-form {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+
+        @media (max-width: 480px) {
+            .logout-container {
+                padding: 40px 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <div class="logout-icon">
+            {% if show_logout_button %}⚠️{% else %}👋{% endif %}
+        </div>
+        
+        {% if show_logout_button %}
+        <!-- Página de confirmación ANTES del logout -->
+        <div class="warning-message">
+            ⚠️ Confirmar cierre de sesión
+        </div>
+        <h1>¿Cerrar sesión?</h1>
+        <p>Estás a punto de cerrar tu sesión en Pick Up Rural. ¿Estás seguro de que deseas continuar?</p>
+        
+        <div class="logout-form">
+            <form method="post" action="{% url 'logout' %}" id="logout-form">
+                {% csrf_token %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-danger">
+                        🚪 Sí, Cerrar Sesión
+                    </button>
+                    <a href="/" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+        
+        {% else %}
+        <!-- Página de confirmación DESPUÉS del logout -->
+        <div class="message">
+            ✅ Sesión cerrada exitosamente
+        </div>
+        <h1>¡Hasta pronto!</h1>
+        <p>Has cerrado sesión correctamente. Gracias por usar Pick Up Rural.</p>
+        
+        <div class="button-group">
+            <a href="/login/" class="btn btn-primary">Iniciar Sesión Nuevamente</a>
+            <a href="/" class="btn btn-secondary">Ir al Inicio</a>
+        </div>
+        
+        <div class="redirect-timer">
+            Redirigiendo al login en <span id="countdown">5</span> segundos...
+        </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        {% if not show_logout_button %}
+        // Countdown para redirección solo después del logout
+        let seconds = 5;
+        const countdownElement = document.getElementById('countdown');
+        
+        const interval = setInterval(() => {
+            seconds--;
+            if (countdownElement) {
+                countdownElement.textContent = seconds;
+            }
+            
+            if (seconds <= 0) {
+                clearInterval(interval);
+                window.location.href = '/login/';
+            }
+        }, 1000);
+        
+        // Cancelar redirect si el usuario hace clic en algún botón
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                clearInterval(interval);
+            });
+        });
+        {% endif %}
+
+        // Prevenir envío múltiple del formulario
+        const logoutForm = document.getElementById('logout-form');
+        if (logoutForm) {
+            logoutForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '⏳ Cerrando sesión...';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
