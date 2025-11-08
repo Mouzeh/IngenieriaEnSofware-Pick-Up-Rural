@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from . import views
 from productos.views import lista_productos
 from pedidos.views import lista_pedidos
-from usuarios.views import login_usuario, registro_usuario, logout_usuario, logout_confirmacion  # Agregar aquí
+from usuarios.views import login_usuario, registro_usuario, logout_usuario, logout_confirmacion
 
 urlpatterns = [
     # Página principal y estado API
@@ -16,10 +16,14 @@ urlpatterns = [
     path('login/', login_usuario, name='login'),
     path('registro/', registro_usuario, name='registro'),
     path('logout/', logout_usuario, name='logout'),
-    path('logout/confirmacion/', logout_confirmacion, name='logout_confirmacion'),  # Cambiar aquí
+    path('logout/confirmacion/', logout_confirmacion, name='logout_confirmacion'),
     
-    # URLs de autenticación de Django (backup/alternativa)
-    path('accounts/', include('django.contrib.auth.urls')),
+    # Redirigir accounts/ a nuestras vistas personalizadas
+    path('accounts/login/', login_usuario, name='auth_login'),
+    path('accounts/logout/', logout_confirmacion, name='auth_logout'),
+    
+    # Dashboard Cliente (NUEVO)
+    path('cliente/', include('usuarios.urls_cliente')),
     
     # Catálogos
     path('productos/', lista_productos, name='catalogo_productos'),
@@ -34,6 +38,7 @@ urlpatterns = [
     path('api/pedidos/', include('pedidos.urls')),
     path('api/notificaciones/', include('notificaciones.urls')),
     path('api/pagos/', include('pagos.urls')),
+    path('api/carrito/', include('carrito.urls')),
 ]
 
 # Servir archivos estáticos y media en desarrollo

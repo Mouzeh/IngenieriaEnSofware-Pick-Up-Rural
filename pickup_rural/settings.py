@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'pedidos',
     'notificaciones',
     'pagos',
+    'carrito', 
     
     # Third party apps
     'rest_framework',
@@ -47,6 +48,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'usuarios.middleware.RoleBasedRedirectMiddleware', 
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 

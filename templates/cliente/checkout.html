@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra - Pick Up Rural</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+        
+        .checkout-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .delivery-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .delivery-option {
+            padding: 20px;
+            border: 3px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .delivery-option:hover {
+            border-color: #667eea;
+        }
+        
+        .delivery-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .delivery-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .delivery-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .delivery-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .delivery-fields {
+            display: none;
+        }
+        
+        .delivery-fields.active {
+            display: block;
+        }
+        
+        .order-summary {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .summary-product {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .summary-product-icon {
+            font-size: 2em;
+        }
+        
+        .summary-product-info {
+            flex: 1;
+        }
+        
+        .summary-product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-product-qty {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .summary-totals {
+            padding: 20px 0;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .summary-total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .btn-place-order {
+            width: 100%;
+            padding: 15px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-place-order:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .btn-back {
+            width: 100%;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛒 Finalizar Compra</h1>
+        <p>Completa tu pedido</p>
+    </div>
+    
+    <div class="container">
+        <div id="alert" class="alert"></div>
+        
+        <div class="checkout-grid">
+            <!-- Formulario de Envío -->
+            <div class="checkout-section">
+                <h2 class="section-title">📦 Información de Entrega</h2>
+                
+                <form id="checkoutForm">
+                    <div class="delivery-options">
+                        <div class="delivery-option" data-method="pickup" onclick="selectDelivery('pickup')">
+                            <div class="delivery-icon">🏪</div>
+                            <div class="delivery-title">Retiro en Tienda</div>
+                            <div class="delivery-desc">Gratis</div>
+                        </div>
+                        
+                        <div class="delivery-option" data-method="delivery" onclick="selectDelivery('delivery')">
+                            <div class="delivery-icon">🚚</div>
+                            <div class="delivery-title">Delivery</div>
+                            <div class="delivery-desc">$2.000</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefono">Teléfono de Contacto *</label>
+                        <input type="tel" id="telefono" value="{{ user.telefono }}" required>
+                    </div>
+                    
+                    <div class="delivery-fields" id="deliveryFields">
+                        <div class="form-group">
+                            <label for="direccion">Dirección de Entrega *</label>
+                            <input type="text" id="direccion" value="{{ user.direccion }}" placeholder="Calle, número, comuna">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="referencia">Referencias</label>
+                            <input type="text" id="referencia" placeholder="Ej: Casa azul, al lado del almacén">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notas">Notas del Pedido (Opcional)</label>
+                        <textarea id="notas" rows="3" placeholder="Instrucciones especiales..."></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Resumen del Pedido -->
+            <div class="checkout-section order-summary">
+                <h2 class="section-title">📋 Resumen del Pedido</h2>
+                
+                <div id="orderItems">
+                    <div style="text-align: center; padding: 20px; color: #666;">
+                        Cargando...
+                    </div>
+                </div>
+                
+                <div class="summary-totals">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0</span>
+                    </div>
+                    <div class="summary-row" id="deliveryRow" style="display: none;">
+                        <span>Envío:</span>
+                        <span id="deliveryCost">$2.000</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Total:</span>
+                        <span id="total">$0</span>
+                    </div>
+                </div>
+                
+                <button class="btn-place-order" onclick="placeOrder()">
+                    Confirmar Pedido 🎉
+                </button>
+                <button class="btn-back" onclick="window.history.back()">
+                    Volver al Carrito
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedMethod = null;
+        let cartData = null;
+        const negocioId = new URLSearchParams(window.location.search).get('negocio_id');
+        
+        // Cargar carrito
+        async function loadCart() {
+            try {
+                const response = await fetch(`/api/carrito/ver/?negocio_id=${negocioId}`);
+                cartData = await response.json();
+                
+                if (!cartData.carrito || cartData.items.length === 0) {
+                    window.location.href = '/cliente/dashboard/';
+                    return;
+                }
+                
+                displayOrderSummary();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Mostrar resumen
+        function displayOrderSummary() {
+            const container = document.getElementById('orderItems');
+            let html = '';
+            
+            cartData.items.forEach(item => {
+                const icon = getProductIcon(item.producto.nombre);
+                html += `
+                    <div class="summary-item">
+                        <div class="summary-product">
+                            <div class="summary-product-icon">${icon}</div>
+                            <div class="summary-product-info">
+                                <div class="summary-product-name">${item.producto.nombre}</div>
+                                <div class="summary-product-qty">${item.cantidad} × $${Number(item.precio_unitario).toLocaleString('es-CL')}</div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold;">$${Number(item.subtotal).toLocaleString('es-CL')}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            updateTotals();
+        }
+        
+        // Seleccionar método de entrega
+        function selectDelivery(method) {
+            selectedMethod = method;
+            
+            document.querySelectorAll('.delivery-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            document.querySelector(`[data-method="${method}"]`).classList.add('selected');
+            
+            const deliveryFields = document.getElementById('deliveryFields');
+            if (method === 'delivery') {
+                deliveryFields.classList.add('active');
+                document.getElementById('direccion').required = true;
+            } else {
+                deliveryFields.classList.remove('active');
+                document.getElementById('direccion').required = false;
+            }
+            
+            updateTotals();
+        }
+        
+        // Actualizar totales
+        function updateTotals() {
+            const subtotal = cartData.subtotal;
+            const deliveryCost = selectedMethod === 'delivery' ? 2000 : 0;
+            const total = subtotal + deliveryCost;
+            
+            document.getElementById('subtotal').textContent = '$' + Number(subtotal).toLocaleString('es-CL');
+            document.getElementById('total').textContent = '$' + total.toLocaleString('es-CL');
+            
+            const deliveryRow = document.getElementById('deliveryRow');
+            if (selectedMethod === 'delivery') {
+                deliveryRow.style.display = 'flex';
+            } else {
+                deliveryRow.style.display = 'none';
+            }
+        }
+        
+        // Realizar pedido
+        async function placeOrder() {
+            const alert = document.getElementById('alert');
+            
+            if (!selectedMethod) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ Selecciona un método de entrega';
+                alert.style.display = 'block';
+                return;
+            }
+            
+            const telefono = document.getElementById('telefono').value;
+            const direccion = document.getElementById('direccion').value;
+            const referencia = document.getElementById('referencia').value;
+            const notas = document.getElementById('notas').value;
+            
+            if (!telefono) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ El teléfono es requerido';
+                alert.style.display = 'block';
+                return;
+            }
+            
+            if (selectedMethod === 'delivery' && !direccion) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ La dirección es requerida para delivery';
+                alert.style.display = 'block';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('negocio_id', negocioId);
+            formData.append('metodo_entrega', selectedMethod);
+            formData.append('telefono_contacto', telefono);
+            formData.append('direccion_entrega', direccion + (referencia ? ' - ' + referencia : ''));
+            formData.append('notas', notas);
+            
+            try {
+                const response = await fetch('/api/carrito/finalizar/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert.className = 'alert alert-success';
+                    alert.textContent = '✅ ¡Pedido realizado exitosamente!';
+                    alert.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = `/cliente/pedido/${data.pedido.id}/`;
+                    }, 2000);
+                } else {
+                    alert.className = 'alert alert-error';
+                    alert.textContent = '❌ ' + (data.error || 'Error al procesar el pedido');
+                    alert.style.display = 'block';
+                }
+            } catch (error) {
+                alert.className = 'alert alert-error';
+                alert.textContent = '❌ Error de conexión';
+                alert.style.display = 'block';
+            }
+        }
+        
+        // Utilidades
+        function getProductIcon(nombre) {
+            const icons = {
+                'arroz': '🍚', 'fideos': '🍝', 'azúcar': '🧂', 'aceite': '🫒',
+                'harina': '🌾', 'leche': '🥛', 'queso': '🧀', 'yogurt': '🥛',
+                'coca': '🥤', 'jugo': '🧃', 'agua': '💧', 'pan': '🍞',
+                'tomate': '🍅', 'lechuga': '🥬', 'papa': '🥔', 'carne': '🥩', 'pollo': '🍗'
+            };
+            
+            const nombreLower = nombre.toLowerCase();
+            for (const [key, icon] of Object.entries(icons)) {
+                if (nombreLower.includes(key)) return icon;
+            }
+            return '📦';
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!negocioId) {
+                window.location.href = '/cliente/dashboard/';
+                return;
+            }
+            loadCart();
+        });
+    </script>
+</body>
+</html>
