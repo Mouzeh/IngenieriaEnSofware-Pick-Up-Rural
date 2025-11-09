@@ -22,8 +22,9 @@ urlpatterns = [
     path('accounts/login/', login_usuario, name='auth_login'),
     path('accounts/logout/', logout_confirmacion, name='auth_logout'),
     
-    # Dashboard Cliente (NUEVO)
+    # Dashboards para diferentes tipos de usuarios
     path('cliente/', include('usuarios.urls_cliente')),
+    path('comerciante/', include('usuarios.urls_comerciante')),
     
     # Catálogos
     path('productos/', lista_productos, name='catalogo_productos'),

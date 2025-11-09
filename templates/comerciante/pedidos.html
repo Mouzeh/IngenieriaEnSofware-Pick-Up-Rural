@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pedidos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .menu-item.active {
+            background: rgba(255,255,255,0.2);
+            border-left: 4px solid white;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 12px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-chip {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .filter-chip:hover {
+            background: #e0e0e0;
+        }
+        
+        .filter-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .orders-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .order-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .order-status {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .status-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-confirmado {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-preparando {
+            background: #fce7f3;
+            color: #831843;
+        }
+        
+        .status-listo {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-completado {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .order-body {
+            margin-bottom: 20px;
+        }
+        
+        .order-info-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .order-info-row strong {
+            color: #333;
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .order-total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-action {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-header {
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+        }
+        
+        .empty-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🏪 Mi Negocio</h1>
+            <p>{{ user.get_full_name }}</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="/comerciante/dashboard/" class="menu-item">
+                <span>📊</span> Dashboard
+            </a>
+            <a href="/comerciante/pedidos/" class="menu-item active">
+                <span>📋</span> Pedidos
+            </a>
+            <a href="/comerciante/productos/" class="menu-item">
+                <span>📦</span> Productos
+            </a>
+        </div>
+        <button class="logout-btn" onclick="window.location.href='/logout/'">
+            🚪 Cerrar Sesión
+        </button>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <h1>📋 Gestión de Pedidos</h1>
+            <p>Administra y actualiza tus pedidos</p>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-chip active" data-estado="all" onclick="filterByStatus('all', this)">
+                📋 Todos
+            </div>
+            <div class="filter-chip" data-estado="pendiente" onclick="filterByStatus('pendiente', this)">
+                ⏳ Pendientes
+            </div>
+            <div class="filter-chip" data-estado="confirmado" onclick="filterByStatus('confirmado', this)">
+                ✓ Confirmados
+            </div>
+            <div class="filter-chip" data-estado="preparando" onclick="filterByStatus('preparando', this)">
+                👨‍🍳 Preparando
+            </div>
+            <div class="filter-chip" data-estado="listo" onclick="filterByStatus('listo', this)">
+                ✅ Listos
+            </div>
+            <div class="filter-chip" data-estado="completado" onclick="filterByStatus('completado', this)">
+                🎉 Completados
+            </div>
+        </div>
+        
+        <div class="orders-grid" id="ordersGrid">
+            <div class="empty-state">
+                <div class="empty-icon">⏳</div>
+                <p>Cargando pedidos...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Cambiar Estado -->
+    <div class="modal" id="statusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Actualizar Estado del Pedido</h2>
+                <p id="modalOrderNumber"></p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="nuevoEstado">Nuevo Estado:</label>
+                    <select id="nuevoEstado">
+                        <option value="confirmado">✓ Confirmado</option>
+                        <option value="preparando">👨‍🍳 Preparando</option>
+                        <option value="listo">✅ Listo para Retirar/Entregar</option>
+                        <option value="en_camino">🚚 En Camino</option>
+                        <option value="completado">🎉 Completado</option>
+                        <option value="cancelado">❌ Cancelado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-action btn-secondary" onclick="closeModal()">
+                    Cancelar
+                </button>
+                <button class="btn-action btn-success" onclick="updateStatus()">
+                    Actualizar
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let allOrders = [];
+        let currentOrderId = null;
+        
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/pedidos/?format=json');
+                const data = await response.json();
+                allOrders = data.pedidos;
+                displayOrders(allOrders);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function displayOrders(orders) {
+            const grid = document.getElementById('ordersGrid');
+            
+            if (orders.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No hay pedidos</h3>
+                        <p>Los nuevos pedidos aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = '';
+            orders.forEach(order => {
+                const card = createOrderCard(order);
+                grid.appendChild(card);
+            });
+        }
+        
+        function createOrderCard(order) {
+            const div = document.createElement('div');
+            div.className = 'order-card';
+            
+            const fecha = new Date(order.fecha_pedido).toLocaleString('es-CL');
+            const metodo = order.metodo_entrega === 'pickup' ? '🏪 Retiro en Tienda' : '🚚 Delivery';
+            
+            div.innerHTML = `
+                <div class="order-header">
+                    <div class="order-number">${order.numero_pedido}</div>
+                    <div class="order-status status-${order.estado}">
+                        ${getEstadoText(order.estado)}
+                    </div>
+                </div>
+                
+                <div class="order-body">
+                    <div class="order-info-row">
+                        <span>👤</span>
+                        <span><strong>Cliente:</strong> ${order.cliente__username}</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span>📅</span>
+                        <span><strong>Fecha:</strong> ${fecha}</span>
+                    </div>
+                    <div class="order-info-row">
+                        <span>${order.metodo_entrega === 'pickup' ? '🏪' : '🚚'}</span>
+                        <span><strong>Método:</strong> ${metodo}</span>
+                    </div>
+                </div>
+                
+                <div class="order-footer">
+                    <div class="order-total">$${Number(order.total).toLocaleString('es-CL')}</div>
+                    <div class="order-actions">
+                        <button class="btn-action btn-secondary" onclick="viewOrder(${order.id})">
+                            👁️ Ver
+                        </button>
+                        ${order.estado !== 'completado' && order.estado !== 'cancelado' ? 
+                            `<button class="btn-action btn-primary" onclick="openStatusModal(${order.id}, '${order.numero_pedido}')">
+                                🔄 Actualizar
+                            </button>` : ''
+                        }
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function getEstadoText(estado) {
+            const estados = {
+                'pendiente': '⏳ Pendiente',
+                'confirmado': '✓ Confirmado',
+                'preparando': '👨‍🍳 Preparando',
+                'listo': '✅ Listo',
+                'en_camino': '🚚 En Camino',
+                'completado': '🎉 Completado',
+                'cancelado': '❌ Cancelado'
+            };
+            return estados[estado] || estado;
+        }
+        
+        function filterByStatus(status, element) {
+            // Actualizar chips activos
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // Filtrar pedidos
+            if (status === 'all') {
+                displayOrders(allOrders);
+            } else {
+                const filtered = allOrders.filter(o => o.estado === status);
+                displayOrders(filtered);
+            }
+        }
+        
+        function viewOrder(id) {
+            window.open(`/admin/pedidos/pedido/${id}/change/`, '_blank');
+        }
+        
+        function openStatusModal(orderId, orderNumber) {
+            currentOrderId = orderId;
+            document.getElementById('modalOrderNumber').textContent = `Pedido: ${orderNumber}`;
+            document.getElementById('statusModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('statusModal').classList.remove('active');
+            currentOrderId = null;
+        }
+        
+        async function updateStatus() {
+            const nuevoEstado = document.getElementById('nuevoEstado').value;
+            
+            if (!currentOrderId) return;
+            
+            const formData = new FormData();
+            formData.append('estado', nuevoEstado);
+            
+            try {
+                const response = await fetch(`/api/pedidos/${currentOrderId}/actualizar/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('✅ Estado actualizado correctamente');
+                    closeModal();
+                    loadOrders();
+                } else {
+                    showNotification('❌ Error al actualizar estado', 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Error de conexión', 'error');
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                background: ${type === 'error' ? '#ef4444' : '#10b981'};
+                color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+        
+        // Cargar pedidos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            
+            // Auto-actualizar cada 30 segundos
+            setInterval(loadOrders, 30000);
+        });
+    </script>
+</body>
+</html>

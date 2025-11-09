@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Comerciante</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            padding-left: 30px;
+        }
+        
+        .menu-item.active {
+            background: rgba(255,255,255,0.2);
+            border-left: 4px solid white;
+        }
+        
+        .menu-icon {
+            font-size: 1.5em;
+        }
+        
+        .menu-text {
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 12px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .page-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+        }
+        
+        .stat-trend {
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .trend-up {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .trend-down {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+        
+        .btn-primary {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        /* Recent Orders */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .order-item {
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .order-item:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .order-info {
+            flex: 1;
+        }
+        
+        .order-number {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .order-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .order-status {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .status-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-confirmado {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-preparando {
+            background: #fce7f3;
+            color: #831843;
+        }
+        
+        .status-listo {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px;
+        }
+        
+        .btn-action {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-view {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-view:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-update {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-update:hover {
+            background: #059669;
+        }
+        
+        /* Low Stock Products */
+        .stock-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stock-item {
+            padding: 15px;
+            border-left: 4px solid #ef4444;
+            background: #fee2e2;
+            border-radius: 8px;
+        }
+        
+        .stock-name {
+            font-weight: bold;
+            color: #991b1b;
+            margin-bottom: 5px;
+        }
+        
+        .stock-count {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🏪 Mi Negocio</h1>
+            <p>{{ user.get_full_name|default:user.username }}</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="/comerciante/dashboard/" class="menu-item active">
+                <span class="menu-icon">📊</span>
+                <span class="menu-text">Dashboard</span>
+            </a>
+            <a href="/comerciante/pedidos/" class="menu-item">
+                <span class="menu-icon">📋</span>
+                <span class="menu-text">Pedidos</span>
+            </a>
+            <a href="/comerciante/productos/" class="menu-item">
+                <span class="menu-icon">📦</span>
+                <span class="menu-text">Productos</span>
+            </a>
+            <a href="/comerciante/clientes/" class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span class="menu-text">Clientes</span>
+            </a>
+            <a href="/comerciante/reportes/" class="menu-item">
+                <span class="menu-icon">📈</span>
+                <span class="menu-text">Reportes</span>
+            </a>
+            <a href="/comerciante/configuracion/" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span class="menu-text">Configuración</span>
+            </a>
+        </div>
+        
+        <button class="logout-btn" onclick="window.location.href='/logout/'">
+            🚪 Cerrar Sesión
+        </button>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1>📊 Panel de Control</h1>
+            <p>Resumen de tu negocio</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📋</span>
+                    <span class="stat-trend trend-up">↑ 12%</span>
+                </div>
+                <div class="stat-value" id="totalPedidos">0</div>
+                <div class="stat-label">Total Pedidos</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">⏳</span>
+                    <span class="stat-trend trend-down">↓ 5%</span>
+                </div>
+                <div class="stat-value" id="pedidosPendientes">0</div>
+                <div class="stat-label">Pedidos Pendientes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">💰</span>
+                    <span class="stat-trend trend-up">↑ 25%</span>
+                </div>
+                <div class="stat-value" id="ventasHoy">$0</div>
+                <div class="stat-label">Ventas de Hoy</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">📦</span>
+                </div>
+                <div class="stat-value" id="totalProductos">0</div>
+                <div class="stat-label">Productos Activos</div>
+            </div>
+        </div>
+        
+        <!-- Pedidos Recientes -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Pedidos Recientes</h2>
+                <button class="btn-primary" onclick="window.location.href='/comerciante/pedidos/'">
+                    Ver Todos
+                </button>
+            </div>
+            <div class="orders-list" id="recentOrders">
+                <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <p>Cargando pedidos...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Productos con Stock Bajo -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">⚠️ Productos con Stock Bajo</h2>
+                <button class="btn-primary" onclick="window.location.href='/comerciante/productos/'">
+                    Gestionar Stock
+                </button>
+            </div>
+            <div class="stock-list" id="lowStock">
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <p>Cargando productos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function loadDashboardData() {
+            try {
+                // Cargar estadísticas de pedidos
+                const pedidosResponse = await fetch('/api/pedidos/?format=json');
+                const pedidosData = await pedidosResponse.json();
+                
+                // Filtrar pedidos del negocio del comerciante
+                const misPedidos = pedidosData.pedidos; // Aquí deberías filtrar por negocio
+                
+                // Actualizar estadísticas
+                document.getElementById('totalPedidos').textContent = misPedidos.length;
+                
+                const pendientes = misPedidos.filter(p => 
+                    ['pendiente', 'confirmado', 'preparando'].includes(p.estado)
+                ).length;
+                document.getElementById('pedidosPendientes').textContent = pendientes;
+                
+                // Calcular ventas de hoy
+                const hoy = new Date().toISOString().split('T')[0];
+                const ventasHoy = misPedidos
+                    .filter(p => p.fecha_pedido.startsWith(hoy))
+                    .reduce((sum, p) => sum + parseFloat(p.total), 0);
+                document.getElementById('ventasHoy').textContent = '$' + Math.round(ventasHoy).toLocaleString('es-CL');
+                
+                // Mostrar pedidos recientes
+                displayRecentOrders(misPedidos.slice(0, 5));
+                
+                // Cargar productos
+                const productosResponse = await fetch('/api/productos/?format=json');
+                const productosData = await productosResponse.json();
+                
+                document.getElementById('totalProductos').textContent = productosData.productos.length;
+                
+                // Filtrar productos con stock bajo
+                const stockBajo = productosData.productos.filter(p => p.stock <= 10 && p.stock > 0);
+                displayLowStock(stockBajo);
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function displayRecentOrders(orders) {
+            const container = document.getElementById('recentOrders');
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>No hay pedidos recientes</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            orders.forEach(order => {
+                const item = document.createElement('div');
+                item.className = 'order-item';
+                
+                const fecha = new Date(order.fecha_pedido).toLocaleString('es-CL');
+                
+                item.innerHTML = `
+                    <div class="order-info">
+                        <div class="order-number">${order.numero_pedido}</div>
+                        <div class="order-details">
+                            👤 ${order.cliente__username} | 
+                            💰 $${Number(order.total).toLocaleString('es-CL')} | 
+                            📅 ${fecha}
+                        </div>
+                    </div>
+                    <span class="order-status status-${order.estado}">
+                        ${getEstadoText(order.estado)}
+                    </span>
+                    <div class="order-actions">
+                        <button class="btn-action btn-view" onclick="verPedido(${order.id})">
+                            Ver
+                        </button>
+                        <button class="btn-action btn-update" onclick="actualizarEstado(${order.id})">
+                            Actualizar
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+        
+        function displayLowStock(products) {
+            const container = document.getElementById('lowStock');
+            
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <p>¡Todos los productos tienen stock suficiente!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.className = 'stock-item';
+                item.innerHTML = `
+                    <div class="stock-name">${product.nombre}</div>
+                    <div class="stock-count">Stock: ${product.stock} ${product.stock === 1 ? 'unidad' : 'unidades'}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function getEstadoText(estado) {
+            const estados = {
+                'pendiente': 'Pendiente',
+                'confirmado': 'Confirmado',
+                'preparando': 'Preparando',
+                'listo': 'Listo',
+                'en_camino': 'En Camino',
+                'completado': 'Completado',
+                'cancelado': 'Cancelado'
+            };
+            return estados[estado] || estado;
+        }
+        
+        function verPedido(id) {
+            window.location.href = `/admin/pedidos/pedido/${id}/change/`;
+        }
+        
+        function actualizarEstado(id) {
+            window.location.href = `/comerciante/pedidos/${id}/actualizar/`;
+        }
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            
+            // Actualizar cada 30 segundos
+            setInterval(loadDashboardData, 30000);
+        });
+    </script>
+</body>
+</html>

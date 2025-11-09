@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <style>
+        /* Usar los mismos estilos del dashboard */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+        }
+        
+        /* Incluir estilos del sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .menu-item.active {
+            background: rgba(255,255,255,0.2);
+            border-left: 4px solid white;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding: 12px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn-add {
+            padding: 12px 25px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .search-box input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 300px;
+        }
+        
+        .products-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tr:hover {
+            background: #f8f9ff;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stock-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .stock-ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .stock-low {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .stock-out {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .btn-table {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+        
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🏪 Mi Negocio</h1>
+            <p>{{ user.get_full_name }}</p>
+        </div>
+        <div class="sidebar-menu">
+            <a href="/comerciante/dashboard/" class="menu-item">
+                <span>📊</span> Dashboard
+            </a>
+            <a href="/comerciante/pedidos/" class="menu-item">
+                <span>📋</span> Pedidos
+            </a>
+            <a href="/comerciante/productos/" class="menu-item active">
+                <span>📦</span> Productos
+            </a>
+        </div>
+        <button class="logout-btn" onclick="window.location.href='/logout/'">
+            🚪 Cerrar Sesión
+        </button>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>📦 Gestión de Productos</h1>
+                <p>Administra tu inventario</p>
+            </div>
+            <button class="btn-add" onclick="window.location.href='/api/productos/agregar/'">
+                ➕ Agregar Producto
+            </button>
+        </div>
+        
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar productos..." onkeyup="filterProducts()">
+            </div>
+        </div>
+        
+        <div class="products-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            Cargando productos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        let allProducts = [];
+        
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/productos/?format=json');
+                const data = await response.json();
+                allProducts = data.productos;
+                displayProducts(allProducts);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function displayProducts(products) {
+            const tbody = document.getElementById('productsTableBody');
+            
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No hay productos</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+                
+                let stockClass = 'stock-ok';
+                let stockText = `${product.stock} disponibles`;
+                if (product.stock === 0) {
+                    stockClass = 'stock-out';
+                    stockText = 'Agotado';
+                } else if (product.stock < 10) {
+                    stockClass = 'stock-low';
+                    stockText = `${product.stock} (Bajo)`;
+                }
+                
+                tr.innerHTML = `
+                    <td>${product.codigo}</td>
+                    <td class="product-name">${product.nombre}</td>
+                    <td>${product.categoria__nombre || 'Sin categoría'}</td>
+                    <td>$${Number(product.precio).toLocaleString('es-CL')}</td>
+                    <td><span class="stock-badge ${stockClass}">${stockText}</span></td>
+                    <td>${product.activo ? '✅ Activo' : '❌ Inactivo'}</td>
+                    <td>
+                        <button class="btn-table btn-edit" onclick="editProduct(${product.id})">✏️ Editar</button>
+                        <button class="btn-table btn-delete" onclick="deleteProduct(${product.id})">🗑️</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function filterProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => 
+                p.nombre.toLowerCase().includes(term) ||
+                p.codigo.toLowerCase().includes(term) ||
+                (p.categoria__nombre && p.categoria__nombre.toLowerCase().includes(term))
+            );
+            displayProducts(filtered);
+        }
+        
+        function editProduct(id) {
+            window.location.href = `/admin/productos/producto/${id}/change/`;
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('¿Estás seguro de eliminar este producto?')) {
+                alert('Funcionalidad en desarrollo');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html>
