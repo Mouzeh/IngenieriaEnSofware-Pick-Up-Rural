@@ -1,0 +1,69 @@
+{% extends 'base_cliente.html' %}
+{% load static %}
+
+{% block title %}Mis Pedidos - Pickup Rural{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="h3 mb-4">Mis Pedidos</h1>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if pedidos %}
+                <div class="list-group">
+                    {% for pedido in pedidos %}
+                    <a href="{% url 'detalle_pedido_cliente' pedido.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">Pedido #{{ pedido.id }}</h5>
+                                <p class="mb-1">
+                                    <strong>Negocio:</strong> {{ pedido.negocio.nombre }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Fecha:</strong> {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Total:</strong> ${{ pedido.total }}
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge 
+                                    {% if pedido.estado == 'pendiente' %}bg-warning
+                                    {% elif pedido.estado == 'confirmado' %}bg-info
+                                    {% elif pedido.estado == 'preparando' %}bg-primary
+                                    {% elif pedido.estado == 'listo' %}bg-success
+                                    {% elif pedido.estado == 'entregado' %}bg-secondary
+                                    {% elif pedido.estado == 'cancelado' %}bg-danger
+                                    {% else %}bg-light{% endif %} mb-2">
+                                    {{ pedido.get_estado_display }}
+                                </span>
+                                <br>
+                                <small class="text-muted">Hacer clic para ver detalles</small>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                    <h3 class="text-muted">No tienes pedidos aún</h3>
+                    <p class="text-muted">Realiza tu primera compra para ver tus pedidos aquí.</p>
+                    <a href="{% url 'dashboard_cliente' %}" class="btn btn-primary">
+                        Ir a comprar
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

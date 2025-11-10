@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pedido</title>
+    {% load static %}  <!-- Añade esta línea -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .btn-back {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-back:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .status-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-badge {
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .estado-pendiente { background: #fef3c7; color: #92400e; }
+        .estado-confirmado { background: #dbeafe; color: #1e40af; }
+        .estado-preparando { background: #fce7f3; color: #831843; }
+        .estado-listo { background: #d1fae5; color: #065f46; }
+        .estado-completado { background: #d1fae5; color: #065f46; }
+        
+        .btn-change-status {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        
+        .btn-change-status:hover {
+            background: #5568d3;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .info-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            width: 150px;
+        }
+        
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+        
+        .products-section {
+            margin-bottom: 30px;
+        }
+        
+        .products-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .product-icon {
+            font-size: 3em;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-info {
+            flex: 1;
+        }
+        
+        .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .product-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .product-price {
+            text-align: right;
+        }
+        
+        .product-quantity {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .product-subtotal {
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        .totals-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .total-final {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 15px;
+        }
+        
+        .actions-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-action {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        
+        .btn-print {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-print:hover {
+            background: #2563eb;
+        }
+        
+        .btn-complete {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-complete:hover {
+            background: #059669;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            padding: 30px;
+        }
+        
+        .modal-header h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-save {
+            flex: 1;
+            padding: 12px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1>📋 Pedido {{ pedido.numero_pedido }}</h1>
+                <p>Detalle completo del pedido</p>
+            </div>
+            <a href="/comerciante/pedidos/" class="btn-back">← Volver a Pedidos</a>
+        </div>
+        
+        <div class="content">
+            <!-- Estado del Pedido -->
+            <div class="status-section">
+                <div>
+                    <h3 style="margin-bottom: 10px;">Estado Actual</h3>
+                    <div class="status-badge estado-{{ pedido.estado }}">
+                        {{ pedido.get_estado_display }}
+                    </div>
+                </div>
+                <button class="btn-change-status" onclick="openModal()">
+                    🔄 Cambiar Estado
+                </button>
+            </div>
+            
+            <!-- Información del Cliente y Entrega -->
+            <div class="info-grid">
+                <div class="info-section">
+                    <h3>👤 Información del Cliente</h3>
+                    <div class="info-row">
+                        <span class="info-label">Cliente:</span>
+                        <span class="info-value">
+                            {% if pedido.cliente.get_full_name %}
+                                {{ pedido.cliente.get_full_name }}
+                            {% else %}
+                                {{ pedido.cliente.username }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Teléfono:</span>
+                        <span class="info-value">{{ pedido.telefono_contacto }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">{{ pedido.cliente.email }}</span>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>🚚 Información de Entrega</h3>
+                    <div class="info-row">
+                        <span class="info-label">Método:</span>
+                        <span class="info-value">
+                            {% if pedido.metodo_entrega == 'pickup' %}
+                                🏪 Retiro en Tienda
+                            {% else %}
+                                🚚 Delivery
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% if pedido.metodo_entrega == 'delivery' %}
+                    <div class="info-row">
+                        <span class="info-label">Dirección:</span>
+                        <span class="info-value">{{ pedido.direccion_entrega }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="info-row">
+                        <span class="info-label">Fecha:</span>
+                        <span class="info-value">{{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Productos del Pedido -->
+            <div class="products-section">
+                <h3>📦 Productos del Pedido</h3>
+                
+                {% for item in pedido.items.all %}
+                <div class="product-item">
+                    <div class="product-icon">📦</div>
+                    <div class="product-info">
+                        <div class="product-name">{{ item.producto.nombre }}</div>
+                        <div class="product-details">
+                            Código: {{ item.producto.codigo }} | 
+                            Precio unitario: ${{ item.precio_unitario|floatformat:0 }}
+                        </div>
+                        {% if item.notas %}
+                        <div class="product-details" style="margin-top: 5px; color: #f59e0b;">
+                            📝 Nota: {{ item.notas }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-price">
+                        <div class="product-quantity">{{ item.cantidad }}x</div>
+                        <div class="product-subtotal">${{ item.subtotal|floatformat:0 }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Notas del Cliente -->
+            {% if pedido.notas_cliente %}
+            <div class="info-section" style="margin-bottom: 30px;">
+                <h3>📝 Notas del Cliente</h3>
+                <p style="color: #666; line-height: 1.6;">{{ pedido.notas_cliente }}</p>
+            </div>
+            {% endif %}
+            
+            <!-- Totales -->
+            <div class="totals-section">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span>${{ pedido.subtotal|floatformat:0 }}</span>
+                </div>
+                {% if pedido.costo_envio > 0 %}
+                <div class="total-row">
+                    <span>Costo de Envío:</span>
+                    <span>${{ pedido.costo_envio|floatformat:0 }}</span>
+                </div>
+                {% endif %}
+                {% if pedido.descuento > 0 %}
+                <div class="total-row">
+                    <span>Descuento:</span>
+                    <span>-${{ pedido.descuento|floatformat:0 }}</span>
+                </div>
+                {% endif %}
+                <div class="total-row total-final">
+                    <span>Total:</span>
+                    <span>${{ pedido.total|floatformat:0 }}</span>
+                </div>
+            </div>
+            
+            <!-- Acciones -->
+            <div class="actions-section">
+                <button class="btn-action btn-print" onclick="window.print()">
+                    🖨️ Imprimir Pedido
+                </button>
+                <button class="btn-action btn-complete" onclick="completarPedido()">
+                    ✅ Marcar como Completado
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Cambiar Estado -->
+    <div class="modal" id="estadoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cambiar Estado del Pedido</h2>
+            </div>
+            
+            <form id="cambiarEstadoForm">
+                {% csrf_token %}  <!-- Añade esta línea para protección CSRF -->
+                <div class="form-group">
+                    <label for="nuevoEstado">Selecciona el nuevo estado:</label>
+                    <select id="nuevoEstado" required>
+                        <option value="pendiente">⏳ Pendiente</option>
+                        <option value="confirmado">✓ Confirmado</option>
+                        <option value="preparando">👨‍🍳 Preparando</option>
+                        <option value="listo">✅ Listo</option>
+                        <option value="en_camino">🚚 En Camino</option>
+                        <option value="completado">🎉 Completado</option>
+                        <option value="cancelado">❌ Cancelado</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-save">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const pedidoId = {{ pedido.id }};
+        const estadoActual = '{{ pedido.estado }}';
+        
+        function openModal() {
+            document.getElementById('nuevoEstado').value = estadoActual;
+            document.getElementById('estadoModal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('estadoModal').classList.remove('active');
+        }
+        
+        document.getElementById('cambiarEstadoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nuevoEstado = document.getElementById('nuevoEstado').value;
+            
+            const formData = new FormData();
+            formData.append('estado', nuevoEstado);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');  // Alternativa para CSRF
+            
+            try {
+                const response = await fetch(`/api/pedidos/${pedidoId}/actualizar/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('✅ Estado actualizado correctamente');
+                    location.reload();
+                } else {
+                    alert('❌ Error al actualizar estado');
+                }
+            } catch (error) {
+                alert('❌ Error de conexión');
+            }
+        });
+        
+        async function completarPedido() {
+            if (!confirm('¿Marcar este pedido como completado?')) return;
+            
+            const formData = new FormData();
+            formData.append('estado', 'completado');
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            
+            try {
+                const response = await fetch(`/api/pedidos/${pedidoId}/actualizar/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('✅ Pedido completado exitosamente');
+                    location.reload();
+                } else {
+                    alert('❌ Error al completar pedido');
+                }
+            } catch (error) {
+                alert('❌ Error de conexión');
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

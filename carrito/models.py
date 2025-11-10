@@ -14,11 +14,21 @@ class Carrito(models.Model):
     class Meta:
         verbose_name = 'Carrito'
         verbose_name_plural = 'Carritos'
-        unique_together = ['usuario', 'negocio', 'activo']
+        # SOLUCIÓN: Eliminar unique_together problemático
         ordering = ['-fecha_actualizacion']
     
     def __str__(self):
         return f"Carrito de {self.usuario.username} - {self.negocio.nombre}"
+    
+    def save(self, *args, **kwargs):
+        # Si este carrito está activo, desactivar otros carritos activos del mismo usuario y negocio
+        if self.activo and self.pk:
+            Carrito.objects.filter(
+                usuario=self.usuario, 
+                negocio=self.negocio, 
+                activo=True
+            ).exclude(pk=self.pk).update(activo=False)
+        super().save(*args, **kwargs)
     
     @property
     def cantidad_items(self):
@@ -77,7 +87,8 @@ class Carrito(models.Model):
             # Calcular totales del pedido
             pedido.calcular_total()
             
-            # Desactivar el carrito
+            # Desactivar el carrito y vaciar items
+            self.items.all().delete()
             self.activo = False
             self.save()
             

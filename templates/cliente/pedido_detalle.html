@@ -1,0 +1,196 @@
+{% extends 'base_cliente.html' %}
+{% load static %}
+
+{% block title %}Detalle del Pedido - Pickup Rural{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Detalle del Pedido #{{ pedido.id }}</h1>
+                <a href="{% url 'cliente_pedidos' %}" class="btn btn-outline-secondary">
+                    ← Volver a mis pedidos
+                </a>
+            </div>
+
+            <!-- Alertas -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Información del pedido -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Información del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Estado:</strong> 
+                                <span class="badge 
+                                    {% if pedido.estado == 'pendiente' %}bg-warning
+                                    {% elif pedido.estado == 'confirmado' %}bg-info
+                                    {% elif pedido.estado == 'preparando' %}bg-primary
+                                    {% elif pedido.estado == 'listo' %}bg-success
+                                    {% elif pedido.estado == 'entregado' %}bg-secondary
+                                    {% elif pedido.estado == 'cancelado' %}bg-danger
+                                    {% else %}bg-light{% endif %}">
+                                    {{ pedido.get_estado_display }}
+                                </span>
+                            </p>
+                            <p><strong>Fecha:</strong> {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Negocio:</strong> {{ pedido.negocio.nombre }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Método de entrega:</strong> {{ pedido.get_metodo_entrega_display }}</p>
+                            {% if pedido.direccion_entrega %}
+                                <p><strong>Dirección:</strong> {{ pedido.direccion_entrega }}</p>
+                            {% endif %}
+                            <p><strong>Teléfono:</strong> {{ pedido.telefono_contacto }}</p>
+                        </div>
+                    </div>
+                    {% if pedido.notas_cliente %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <p><strong>Notas:</strong> {{ pedido.notas_cliente }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Productos del pedido -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Productos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio Unitario</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detalle in pedido.detalles.all %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if detalle.producto.imagen %}
+                                                <img src="{{ detalle.producto.imagen.url }}" alt="{{ detalle.producto.nombre }}" 
+                                                     class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" 
+                                                     style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ detalle.producto.nombre }}</h6>
+                                                {% if detalle.producto.descripcion %}
+                                                    <small class="text-muted">{{ detalle.producto.descripcion|truncatewords:10 }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ detalle.cantidad }}</td>
+                                    <td class="text-end">${{ detalle.precio_unitario }}</td>
+                                    <td class="text-end">${{ detalle.subtotal }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">
+                                        No hay productos en este pedido.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>${{ pedido.total }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Información de contacto</h6>
+                            <p class="mb-1"><strong>Negocio:</strong> {{ pedido.negocio.nombre }}</p>
+                            <p class="mb-1"><strong>Teléfono:</strong> {{ pedido.negocio.telefono }}</p>
+                            <p class="mb-0"><strong>Dirección:</strong> {{ pedido.negocio.direccion }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            {% if pedido.estado == 'pendiente' %}
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelarModal">
+                                    Cancelar Pedido
+                                </button>
+                            {% elif pedido.estado == 'listo' %}
+                                <button class="btn btn-success">
+                                    Marcar como Recogido
+                                </button>
+                            {% endif %}
+                            
+                            <a href="{% url 'cliente_pedidos' %}" class="btn btn-outline-secondary ms-2">
+                                Ver todos mis pedidos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para cancelar pedido -->
+{% if pedido.estado == 'pendiente' %}
+<div class="modal fade" id="cancelarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancelar Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres cancelar este pedido?</p>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No Cancelar</button>
+                <form method="post" action="{% url 'cancelar_pedido' pedido.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sí, Cancelar Pedido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Aquí puedes agregar JavaScript adicional si es necesario
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página de detalle de pedido cargada');
+});
+</script>
+{% endblock %}
