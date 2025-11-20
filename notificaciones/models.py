@@ -1,3 +1,4 @@
+# notificaciones/models.py
 from django.db import models
 from usuarios.models import Usuario
 from pedidos.models import Pedido

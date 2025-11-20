@@ -30,6 +30,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             margin-bottom: 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
@@ -42,6 +43,254 @@
             color: #666;
             font-size: 1.2em;
         }
+
+        /* ====== SISTEMA DE NOTIFICACIONES ====== */
+        .notificaciones-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+        }
+
+        .notificaciones-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.8em;
+            color: #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .notificaciones-bell:hover {
+            transform: scale(1.1);
+        }
+
+        .notificaciones-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .notificaciones-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 380px;
+            max-height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .notificaciones-dropdown.show {
+            display: flex;
+        }
+
+        .notificaciones-header {
+            padding: 15px 20px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notificaciones-header h3 {
+            color: #667eea;
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        .marcar-todas-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.85em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .marcar-todas-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .notificaciones-lista {
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .notificacion-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            gap: 12px;
+        }
+
+        .notificacion-item:hover {
+            background: #f9fafb;
+        }
+
+        .notificacion-item.no-leida {
+            background: #eff6ff;
+        }
+
+        .notificacion-icon {
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .notificacion-content {
+            flex: 1;
+        }
+
+        .notificacion-titulo {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+
+        .notificacion-mensaje {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .notificacion-fecha {
+            color: #999;
+            font-size: 0.75em;
+            margin-top: 4px;
+        }
+
+        .notificaciones-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .notificaciones-empty-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notificacion-toast {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 320px;
+            max-width: 400px;
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid #667eea;
+        }
+
+        .notificacion-toast.fade-out {
+            animation: slideOut 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast-header {
+            padding: 12px 15px;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .toast-icon {
+            font-size: 1.3em;
+        }
+
+        .toast-header strong {
+            flex: 1;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .toast-close:hover {
+            background: #e5e7eb;
+            color: #333;
+        }
+
+        .toast-body {
+            padding: 15px;
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* ====== FIN NOTIFICACIONES ====== */
         
         .stats-grid {
             display: grid;
@@ -242,14 +491,61 @@
                 flex-direction: column;
                 gap: 8px;
             }
+
+            .notificaciones-container {
+                position: static;
+                text-align: right;
+                margin-top: 15px;
+            }
+
+            .notificaciones-dropdown {
+                width: calc(100vw - 40px);
+                right: -15px;
+            }
+
+            #toast-container {
+                right: 10px;
+                left: 10px;
+            }
+
+            .notificacion-toast {
+                min-width: auto;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            {% if user.is_authenticated %}
+            <!-- Sistema de Notificaciones -->
+            <div class="notificaciones-container">
+                <div class="notificaciones-bell" id="notificaciones-bell">
+                    🔔
+                    <span class="notificaciones-badge" id="notificaciones-badge" style="display: none;">0</span>
+                </div>
+                
+                <div class="notificaciones-dropdown" id="notificaciones-dropdown">
+                    <div class="notificaciones-header">
+                        <h3>Notificaciones</h3>
+                        <button class="marcar-todas-btn" id="marcar-todas-leidas">
+                            Marcar todas como leídas
+                        </button>
+                    </div>
+                    <div class="notificaciones-lista" id="notificaciones-lista">
+                        <div class="notificaciones-empty">
+                            <div class="notificaciones-empty-icon">🔕</div>
+                            <p>No hay notificaciones</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <h1>🛒 Pick Up Rural</h1>
             <p>Sistema de Gestión de Pedidos para Negocios Rurales</p>
+            
             {% if user.is_authenticated %}
             <div class="user-info">
                 <span>👤 {{ user.get_full_name|default:user.username }}</span>
@@ -349,29 +645,321 @@
                 <div class="empty-state">
                     <div class="empty-state-icon">📭</div>
                     <p>No hay pedidos registrados aún</p>
-                    <p style="margin-top: 10px; color: #666;">
-                        Ejecuta el script de datos de prueba para ver pedidos de ejemplo
-                    </p>
                 </div>
             {% endif %}
         </div>
         
         <div class="footer">
             <p>🚀 Pick Up Rural v1.0 | Desarrollado para negocios rurales de Chile</p>
-            <p style="margin-top: 5px; opacity: 0.8;">
-                Django {{ django_version }} | Python {{ python_version }}
-            </p>
         </div>
     </div>
 
+    <!-- Container para Toast Notifications -->
+    <div id="toast-container"></div>
+
     <script>
+        // ============================================
+        // SISTEMA DE NOTIFICACIONES EN TIEMPO REAL
+        // ============================================
+
+        class NotificacionesManager {
+            constructor() {
+                this.pollingInterval = null;
+                this.pollingTime = 10000; // 10 segundos
+                this.notificacionesVistas = new Set();
+                this.init();
+            }
+
+            init() {
+                console.log('🔔 Sistema de notificaciones iniciado');
+                this.cargarNotificaciones();
+                this.cargarListaCompleta();
+                this.iniciarPolling();
+                this.configurarEventListeners();
+            }
+
+            async cargarNotificaciones() {
+                try {
+                    const response = await fetch('/api/notificaciones/no-leidas/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.actualizarBadge(data.count);
+                        this.mostrarNotificacionesNuevas(data.notificaciones);
+                    }
+                } catch (error) {
+                    console.error('Error al cargar notificaciones:', error);
+                }
+            }
+
+            async cargarListaCompleta() {
+                try {
+                    const response = await fetch('/api/notificaciones/', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.actualizarListaDropdown(data.notificaciones);
+                    }
+                } catch (error) {
+                    console.error('Error al cargar lista completa:', error);
+                }
+            }
+
+            iniciarPolling() {
+                this.pollingInterval = setInterval(() => {
+                    this.cargarNotificaciones();
+                }, this.pollingTime);
+            }
+
+            detenerPolling() {
+                if (this.pollingInterval) {
+                    clearInterval(this.pollingInterval);
+                }
+            }
+
+            actualizarBadge(count) {
+                const badge = document.getElementById('notificaciones-badge');
+                if (badge) {
+                    if (count > 0) {
+                        badge.textContent = count > 99 ? '99+' : count;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+
+            actualizarListaDropdown(notificaciones) {
+                const lista = document.getElementById('notificaciones-lista');
+                if (!lista) return;
+
+                if (notificaciones.length === 0) {
+                    lista.innerHTML = `
+                        <div class="notificaciones-empty">
+                            <div class="notificaciones-empty-icon">🔕</div>
+                            <p>No hay notificaciones</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                lista.innerHTML = notificaciones.map(notif => `
+                    <div class="notificacion-item ${!notif.leida ? 'no-leida' : ''}" 
+                         data-id="${notif.id}"
+                         onclick="notificacionesManager.marcarComoLeida(${notif.id})">
+                        <div class="notificacion-icon">${this.getIconoPorTipo(notif.tipo)}</div>
+                        <div class="notificacion-content">
+                            <div class="notificacion-titulo">${notif.titulo}</div>
+                            <div class="notificacion-mensaje">${notif.mensaje}</div>
+                            <div class="notificacion-fecha">${this.formatearFecha(notif.fecha_creacion)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            mostrarNotificacionesNuevas(notificaciones) {
+                notificaciones.forEach(notif => {
+                    if (!this.notificacionesVistas.has(notif.id)) {
+                        this.mostrarToast(notif);
+                        this.notificacionesVistas.add(notif.id);
+                    }
+                });
+            }
+
+            mostrarToast(notif) {
+                const toast = document.createElement('div');
+                toast.className = 'notificacion-toast';
+                toast.innerHTML = `
+                    <div class="toast-header">
+                        <span class="toast-icon">${this.getIconoPorTipo(notif.tipo)}</span>
+                        <strong>${notif.titulo}</strong>
+                        <button class="toast-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                    </div>
+                    <div class="toast-body">
+                        ${notif.mensaje}
+                    </div>
+                `;
+
+                const container = document.getElementById('toast-container') || this.crearToastContainer();
+                container.appendChild(toast);
+
+                this.reproducirSonido();
+
+                setTimeout(() => {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => toast.remove(), 300);
+                }, 5000);
+
+                toast.addEventListener('click', () => {
+                    this.marcarComoLeida(notif.id);
+                    toast.remove();
+                });
+            }
+
+            crearToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toast-container';
+                document.body.appendChild(container);
+                return container;
+            }
+
+            getIconoPorTipo(tipo) {
+                const iconos = {
+                    'pedido_nuevo': '🛒',
+                    'pedido_confirmado': '✅',
+                    'pedido_preparando': '👨‍🍳',
+                    'pedido_listo': '✅',
+                    'pedido_en_camino': '🚚',
+                    'pedido_completado': '🎉',
+                    'pedido_cancelado': '❌',
+                    'stock_bajo': '⚠️',
+                    'sistema': '🔔'
+                };
+                return iconos[tipo] || '🔔';
+            }
+
+            reproducirSonido() {
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjGH0O+2YycJC0u07tqDPw==');
+                    audio.volume = 0.3;
+                    audio.play().catch(e => console.log('No se pudo reproducir el sonido'));
+                } catch (error) {
+                    console.log('Audio no soportado');
+                }
+            }
+
+            async marcarComoLeida(notifId) {
+                try {
+                    const response = await fetch(`/api/notificaciones/${notifId}/leer/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': this.getCookie('csrftoken')
+                        },
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        this.cargarNotificaciones();
+                        this.cargarListaCompleta();
+                    }
+                } catch (error) {
+                    console.error('Error al marcar como leída:', error);
+                }
+            }
+
+            async marcarTodasLeidas() {
+                try {
+                    const response = await fetch('/api/notificaciones/marcar-todas-leidas/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': this.getCookie('csrftoken')
+                        },
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        this.cargarNotificaciones();
+                        this.cargarListaCompleta();
+                        this.actualizarBadge(0);
+                    }
+                } catch (error) {
+                    console.error('Error al marcar todas como leídas:', error);
+                }
+            }
+
+            configurarEventListeners() {
+                const bellIcon = document.getElementById('notificaciones-bell');
+                if (bellIcon) {
+                    bellIcon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const dropdown = document.getElementById('notificaciones-dropdown');
+                        if (dropdown) {
+                            dropdown.classList.toggle('show');
+                            if (dropdown.classList.contains('show')) {
+                                this.cargarListaCompleta();
+                            }
+                        }
+                    });
+                }
+
+                document.addEventListener('click', () => {
+                    const dropdown = document.getElementById('notificaciones-dropdown');
+                    if (dropdown) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+
+                const btnMarcarTodas = document.getElementById('marcar-todas-leidas');
+                if (btnMarcarTodas) {
+                    btnMarcarTodas.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.marcarTodasLeidas();
+                    });
+                }
+            }
+
+            formatearFecha(fechaStr) {
+                const fecha = new Date(fechaStr);
+                const ahora = new Date();
+                const diff = ahora - fecha;
+                const minutos = Math.floor(diff / 60000);
+                const horas = Math.floor(diff / 3600000);
+                const dias = Math.floor(diff / 86400000);
+
+                if (minutos < 1) return 'Ahora';
+                if (minutos < 60) return `Hace ${minutos} min`;
+                if (horas < 24) return `Hace ${horas} hora${horas > 1 ? 's' : ''}`;
+                if (dias < 7) return `Hace ${dias} día${dias > 1 ? 's' : ''}`;
+                
+                return fecha.toLocaleDateString('es-ES', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                });
+            }
+
+            getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        }
+
+        // ============================================
+        // FUNCIONES DE LOGOUT
+        // ============================================
+        
         function confirmarLogout() {
             if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
                 document.getElementById('logout-form').submit();
             }
         }
 
-        // Prevenir envío múltiple del formulario
         document.addEventListener('DOMContentLoaded', function() {
             const logoutForm = document.getElementById('logout-form');
             if (logoutForm) {
@@ -383,7 +971,17 @@
                     }
                 });
             }
+
+            // Inicializar sistema de notificaciones si el usuario está autenticado
+            const notifBell = document.getElementById('notificaciones-bell');
+            if (notifBell) {
+                window.notificacionesManager = new NotificacionesManager();
+            }
         });
-    </script>
-</body>
-</html>
+
+        // Detener polling cuando se cierra la página
+        window.addEventListener('beforeunload', () => {
+            if (window.notificacionesManager) {
+                window.notificacionesManager.detenerPolling();
+            }
+        });

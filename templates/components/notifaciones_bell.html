@@ -1,0 +1,34 @@
+{% comment %}
+============================================
+COMPONENTE DE NOTIFICACIONES REUTILIZABLE
+============================================
+Uso: {% include 'components/notificaciones_bell.html' %}
+{% endcomment %}
+
+{% if user.is_authenticated %}
+<!-- Sistema de Notificaciones -->
+<div class="notificaciones-container">
+    <div class="notificaciones-bell" id="notificaciones-bell" title="Notificaciones">
+        🔔
+        <span class="notificaciones-badge" id="notificaciones-badge" style="display: none;">0</span>
+    </div>
+    
+    <div class="notificaciones-dropdown" id="notificaciones-dropdown">
+        <div class="notificaciones-header">
+            <h3>Notificaciones</h3>
+            <button class="marcar-todas-btn" id="marcar-todas-leidas" title="Marcar todas como leídas">
+                Marcar todas como leídas
+            </button>
+        </div>
+        <div class="notificaciones-lista" id="notificaciones-lista">
+            <div class="notificaciones-empty">
+                <div class="notificaciones-empty-icon">🔕</div>
+                <p>Cargando notificaciones...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Container para Toast Notifications -->
+<div id="toast-container"></div>
+{% endif %}
