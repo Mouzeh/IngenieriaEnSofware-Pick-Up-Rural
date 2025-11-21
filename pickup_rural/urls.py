@@ -40,6 +40,9 @@ urlpatterns = [
     path('api/notificaciones/', include('notificaciones.urls')),
     path('api/pagos/', include('pagos.urls')),
     path('api/carrito/', include('carrito.urls')),
+    path('administracion/', include('administracion.urls')),
+    path('chat/', include('chat.urls')),
+    path('fidelizacion/', include('fidelizacion.urls')),
 ]
 
 # Servir archivos estáticos y media en desarrollo

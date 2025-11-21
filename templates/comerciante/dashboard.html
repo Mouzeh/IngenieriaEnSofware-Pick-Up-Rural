@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control - Comerciante</title>
     <style>
+        /* Mantén todos tus estilos CSS existentes */
         * {
             margin: 0;
             padding: 0;
@@ -258,6 +259,14 @@
             font-size: 0.9em;
         }
         
+        .order-items-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+        
         .order-status {
             padding: 8px 20px;
             border-radius: 20px;
@@ -281,6 +290,11 @@
         }
         
         .status-listo {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-completado {
             background: #d1fae5;
             color: #065f46;
         }
@@ -374,7 +388,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h1>🏪 Mi Negocio</h1>
+            <h1>🏪 {% if negocio %}{{ negocio.nombre }}{% else %}Mi Negocio{% endif %}</h1>
             <p>{{ user.get_full_name|default:user.username }}</p>
         </div>
         
@@ -414,48 +428,54 @@
     <div class="main-content">
         <div class="page-header">
             <h1>📊 Panel de Control</h1>
-            <p>Resumen de tu negocio</p>
+            <p>Resumen de {% if negocio %}{{ negocio.nombre }}{% else %}tu negocio{% endif %}</p>
         </div>
         
-        <!-- Stats Cards -->
+        <!-- Stats Cards con datos reales -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📋</span>
-                    <span class="stat-trend trend-up">↑ 12%</span>
+                    {% if stats.total_pedidos > 0 %}
+                    <span class="stat-trend trend-up">↑</span>
+                    {% endif %}
                 </div>
-                <div class="stat-value" id="totalPedidos">0</div>
+                <div class="stat-value">{{ stats.total_pedidos }}</div>
                 <div class="stat-label">Total Pedidos</div>
             </div>
             
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">⏳</span>
-                    <span class="stat-trend trend-down">↓ 5%</span>
+                    {% if stats.pedidos_pendientes > 0 %}
+                    <span class="stat-trend trend-down">⚠️</span>
+                    {% endif %}
                 </div>
-                <div class="stat-value" id="pedidosPendientes">0</div>
+                <div class="stat-value">{{ stats.pedidos_pendientes }}</div>
                 <div class="stat-label">Pedidos Pendientes</div>
             </div>
             
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">💰</span>
-                    <span class="stat-trend trend-up">↑ 25%</span>
+                    {% if stats.ventas_mes > 0 %}
+                    <span class="stat-trend trend-up">↑</span>
+                    {% endif %}
                 </div>
-                <div class="stat-value" id="ventasHoy">$0</div>
-                <div class="stat-label">Ventas de Hoy</div>
+                <div class="stat-value">${{ stats.ventas_mes|floatformat:0 }}</div>
+                <div class="stat-label">Ventas del Mes</div>
             </div>
             
             <div class="stat-card">
                 <div class="stat-header">
                     <span class="stat-icon">📦</span>
                 </div>
-                <div class="stat-value" id="totalProductos">0</div>
+                <div class="stat-value">{{ stats.total_productos }}</div>
                 <div class="stat-label">Productos Activos</div>
             </div>
         </div>
         
-        <!-- Pedidos Recientes -->
+        <!-- Pedidos Recientes con datos reales -->
         <div class="content-section">
             <div class="section-header">
                 <h2 class="section-title">📋 Pedidos Recientes</h2>
@@ -463,15 +483,52 @@
                     Ver Todos
                 </button>
             </div>
-            <div class="orders-list" id="recentOrders">
-                <div class="empty-state">
-                    <div class="empty-icon">⏳</div>
-                    <p>Cargando pedidos...</p>
-                </div>
+            <div class="orders-list">
+                {% if pedidos_recientes %}
+                    {% for pedido in pedidos_recientes %}
+                    <div class="order-item">
+                        <div class="order-info">
+                            <div class="order-number">{{ pedido.numero_pedido }}</div>
+                            <div class="order-details">
+                                👤 {{ pedido.cliente.get_full_name|default:pedido.cliente.username }} | 
+                                💰 ${{ pedido.total|floatformat:0 }} | 
+                                📅 {{ pedido.fecha_pedido|date:"d/m/Y H:i" }}
+                            </div>
+                            <!-- Mostrar productos del pedido -->
+                            <div class="order-items-preview">
+                                {% for item in pedido.items.all|slice:":3" %}
+                                {{ item.cantidad }}x {{ item.producto.nombre }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                                {% if pedido.items.count > 3 %}...{% endif %}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="order-status status-{{ pedido.estado }}">
+                                {{ pedido.get_estado_display }}
+                            </span>
+                            <div class="order-actions">
+                                <button class="btn-action btn-view" onclick="verPedido({{ pedido.id }})">
+                                    Ver
+                                </button>
+                                {% if pedido.estado != 'completado' and pedido.estado != 'cancelado' %}
+                                <button class="btn-action btn-update" onclick="actualizarEstado({{ pedido.id }})">
+                                    Actualizar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>No hay pedidos recientes</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
         
-        <!-- Productos con Stock Bajo -->
+        <!-- Productos con Stock Bajo con datos reales -->
         <div class="content-section">
             <div class="section-header">
                 <h2 class="section-title">⚠️ Productos con Stock Bajo</h2>
@@ -479,156 +536,38 @@
                     Gestionar Stock
                 </button>
             </div>
-            <div class="stock-list" id="lowStock">
-                <div class="empty-state">
-                    <div class="empty-icon">📦</div>
-                    <p>Cargando productos...</p>
-                </div>
+            <div class="stock-list">
+                {% if productos_stock_bajo %}
+                    {% for producto in productos_stock_bajo %}
+                    <div class="stock-item">
+                        <div class="stock-name">{{ producto.nombre }}</div>
+                        <div class="stock-count">Stock: {{ producto.stock }} unidad{{ producto.stock|pluralize:"es" }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <p>¡Todos los productos tienen stock suficiente!</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
     
     <script>
-        async function loadDashboardData() {
-            try {
-                // Cargar estadísticas de pedidos
-                const pedidosResponse = await fetch('/api/pedidos/?format=json');
-                const pedidosData = await pedidosResponse.json();
-                
-                // Filtrar pedidos del negocio del comerciante
-                const misPedidos = pedidosData.pedidos; // Aquí deberías filtrar por negocio
-                
-                // Actualizar estadísticas
-                document.getElementById('totalPedidos').textContent = misPedidos.length;
-                
-                const pendientes = misPedidos.filter(p => 
-                    ['pendiente', 'confirmado', 'preparando'].includes(p.estado)
-                ).length;
-                document.getElementById('pedidosPendientes').textContent = pendientes;
-                
-                // Calcular ventas de hoy
-                const hoy = new Date().toISOString().split('T')[0];
-                const ventasHoy = misPedidos
-                    .filter(p => p.fecha_pedido.startsWith(hoy))
-                    .reduce((sum, p) => sum + parseFloat(p.total), 0);
-                document.getElementById('ventasHoy').textContent = '$' + Math.round(ventasHoy).toLocaleString('es-CL');
-                
-                // Mostrar pedidos recientes
-                displayRecentOrders(misPedidos.slice(0, 5));
-                
-                // Cargar productos
-                const productosResponse = await fetch('/api/productos/?format=json');
-                const productosData = await productosResponse.json();
-                
-                document.getElementById('totalProductos').textContent = productosData.productos.length;
-                
-                // Filtrar productos con stock bajo
-                const stockBajo = productosData.productos.filter(p => p.stock <= 10 && p.stock > 0);
-                displayLowStock(stockBajo);
-                
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-        
-        function displayRecentOrders(orders) {
-            const container = document.getElementById('recentOrders');
-            
-            if (orders.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📭</div>
-                        <p>No hay pedidos recientes</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = '';
-            orders.forEach(order => {
-                const item = document.createElement('div');
-                item.className = 'order-item';
-                
-                const fecha = new Date(order.fecha_pedido).toLocaleString('es-CL');
-                
-                item.innerHTML = `
-                    <div class="order-info">
-                        <div class="order-number">${order.numero_pedido}</div>
-                        <div class="order-details">
-                            👤 ${order.cliente__username} | 
-                            💰 $${Number(order.total).toLocaleString('es-CL')} | 
-                            📅 ${fecha}
-                        </div>
-                    </div>
-                    <span class="order-status status-${order.estado}">
-                        ${getEstadoText(order.estado)}
-                    </span>
-                    <div class="order-actions">
-                        <button class="btn-action btn-view" onclick="verPedido(${order.id})">
-                            Ver
-                        </button>
-                        <button class="btn-action btn-update" onclick="actualizarEstado(${order.id})">
-                            Actualizar
-                        </button>
-                    </div>
-                `;
-                
-                container.appendChild(item);
-            });
-        }
-        
-        function displayLowStock(products) {
-            const container = document.getElementById('lowStock');
-            
-            if (products.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">✅</div>
-                        <p>¡Todos los productos tienen stock suficiente!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = '';
-            products.forEach(product => {
-                const item = document.createElement('div');
-                item.className = 'stock-item';
-                item.innerHTML = `
-                    <div class="stock-name">${product.nombre}</div>
-                    <div class="stock-count">Stock: ${product.stock} ${product.stock === 1 ? 'unidad' : 'unidades'}</div>
-                `;
-                container.appendChild(item);
-            });
-        }
-        
-        function getEstadoText(estado) {
-            const estados = {
-                'pendiente': 'Pendiente',
-                'confirmado': 'Confirmado',
-                'preparando': 'Preparando',
-                'listo': 'Listo',
-                'en_camino': 'En Camino',
-                'completado': 'Completado',
-                'cancelado': 'Cancelado'
-            };
-            return estados[estado] || estado;
-        }
-        
         function verPedido(id) {
-            window.location.href = `/admin/pedidos/pedido/${id}/change/`;
+            window.location.href = `/comerciante/pedidos/${id}/`;
         }
         
         function actualizarEstado(id) {
-            window.location.href = `/comerciante/pedidos/${id}/actualizar/`;
+            window.location.href = `/comerciante/pedidos/${id}/`;
         }
         
-        // Cargar datos al iniciar
+        // Actualizar datos cada 60 segundos
         document.addEventListener('DOMContentLoaded', function() {
-            loadDashboardData();
-            
-            // Actualizar cada 30 segundos
-            setInterval(loadDashboardData, 30000);
+            setInterval(() => {
+                window.location.reload();
+            }, 60000);
         });
     </script>
 </body>

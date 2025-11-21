@@ -1,3 +1,4 @@
+<!-- templates/cliente/mis_pedidos.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,51 +15,36 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f5f5;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .btn-back {
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        
-        .btn-back:hover {
-            background: white;
-            color: #667eea;
         }
         
         .container {
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+            margin: 0 auto;
         }
         
-        .pedidos-grid {
+        .page-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .page-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .orders-grid {
             display: grid;
             gap: 20px;
         }
         
-        .pedido-card {
+        .order-card {
             background: white;
             border-radius: 15px;
             padding: 25px;
@@ -66,12 +52,12 @@
             transition: all 0.3s;
         }
         
-        .pedido-card:hover {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        .order-card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
         }
         
-        .pedido-header {
+        .order-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -80,83 +66,110 @@
             border-bottom: 2px solid #f0f0f0;
         }
         
-        .pedido-numero {
+        .order-number {
             font-size: 1.3em;
             font-weight: bold;
             color: #333;
         }
         
-        .pedido-estado {
+        .order-status {
             padding: 8px 20px;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: bold;
             font-size: 0.9em;
         }
         
-        .estado-pendiente { background: #fef3c7; color: #92400e; }
-        .estado-confirmado { background: #dbeafe; color: #1e40af; }
-        .estado-preparando { background: #fce7f3; color: #831843; }
-        .estado-listo { background: #d1fae5; color: #065f46; }
-        .estado-completado { background: #d1fae5; color: #065f46; }
+        .status-pendiente { background: #fef3c7; color: #92400e; }
+        .status-confirmado { background: #dbeafe; color: #1e40af; }
+        .status-preparando { background: #fce7f3; color: #831843; }
+        .status-listo { background: #d1fae5; color: #065f46; }
+        .status-completado { background: #d1fae5; color: #065f46; }
+        .status-cancelado { background: #fee2e2; color: #991b1b; }
         
-        .pedido-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+        .order-body {
             margin-bottom: 20px;
         }
         
-        .info-row {
+        .order-info-row {
             display: flex;
-            align-items: center;
             gap: 10px;
+            margin-bottom: 10px;
+            color: #666;
         }
         
-        .info-icon {
-            font-size: 1.5em;
-        }
-        
-        .info-text {
-            flex: 1;
-        }
-        
-        .info-label {
-            font-size: 0.85em;
-            color: #999;
-        }
-        
-        .info-value {
-            font-weight: 600;
+        .order-info-row strong {
             color: #333;
         }
         
-        .pedido-actions {
+        .order-items-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .order-item-preview {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.9em;
+        }
+        
+        .order-item-preview:last-child {
+            border-bottom: none;
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding-top: 15px;
             border-top: 2px solid #f0f0f0;
         }
         
-        .btn {
-            flex: 1;
-            padding: 12px;
+        .order-total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-action {
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            text-decoration: none;
-            text-align: center;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .btn-primary {
-            background: #667eea;
+        /* BOTÓN CHAT PARA CLIENTE */
+        .btn-chat {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
         }
         
-        .btn-primary:hover {
-            background: #5568d3;
+        .btn-chat:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
         }
         
         .empty-state {
@@ -164,93 +177,176 @@
             padding: 60px 20px;
             background: white;
             border-radius: 15px;
+            grid-column: 1 / -1;
         }
         
         .empty-icon {
             font-size: 5em;
             margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Notificación de mensajes nuevos */
+        .chat-notification {
+            position: relative;
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .nav-btn {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
-            <div>
-                <h1>📋 Mis Pedidos</h1>
-                <p>Historial de tus compras</p>
-            </div>
-            <a href="/cliente/dashboard/" class="btn-back">← Volver al Inicio</a>
-        </div>
-    </div>
-    
     <div class="container">
-        <div class="pedidos-grid">
+        <div class="page-header">
+            <h1>📋 Mis Pedidos</h1>
+            <p>Revisa el estado de tus pedidos y comunícate con los comerciantes</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="/cliente/dashboard/" class="nav-btn">
+                ← Volver al Dashboard
+            </a>
+            <a href="/productos/" class="nav-btn">
+                🛒 Seguir Comprando
+            </a>
+        </div>
+        
+        <div class="orders-grid">
             {% if pedidos %}
                 {% for pedido in pedidos %}
-                <div class="pedido-card">
-                    <div class="pedido-header">
-                        <div class="pedido-numero">{{ pedido.numero_pedido }}</div>
-                        <div class="pedido-estado estado-{{ pedido.estado }}">
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-number">#{{ pedido.numero_pedido }}</div>
+                        <div class="order-status status-{{ pedido.estado }}">
                             {{ pedido.get_estado_display }}
                         </div>
                     </div>
                     
-                    <div class="pedido-body">
-                        <div class="info-row">
-                            <span class="info-icon">🏪</span>
-                            <div class="info-text">
-                                <div class="info-label">Negocio</div>
-                                <div class="info-value">{{ pedido.negocio.nombre }}</div>
-                            </div>
+                    <div class="order-body">
+                        <div class="order-info-row">
+                            <span>🏪</span>
+                            <span><strong>Negocio:</strong> {{ pedido.negocio.nombre }}</span>
                         </div>
-                        
-                        <div class="info-row">
-                            <span class="info-icon">💰</span>
-                            <div class="info-text">
-                                <div class="info-label">Total</div>
-                                <div class="info-value">${{ pedido.total|floatformat:0 }}</div>
-                            </div>
+                        <div class="order-info-row">
+                            <span>📅</span>
+                            <span><strong>Fecha:</strong> {{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</span>
                         </div>
-                        
-                        <div class="info-row">
-                            <span class="info-icon">
-                                {% if pedido.metodo_entrega == 'pickup' %}🏪{% else %}🚚{% endif %}
+                        <div class="order-info-row">
+                            <span>🚚</span>
+                            <span><strong>Entrega:</strong> 
+                                {% if pedido.metodo_entrega == 'pickup' %}
+                                    🏪 Retiro en Tienda
+                                {% else %}
+                                    🚚 Delivery
+                                {% endif %}
                             </span>
-                            <div class="info-text">
-                                <div class="info-label">Método</div>
-                                <div class="info-value">
-                                    {% if pedido.metodo_entrega == 'pickup' %}Retiro en Tienda{% else %}Delivery{% endif %}
-                                </div>
-                            </div>
                         </div>
                         
-                        <div class="info-row">
-                            <span class="info-icon">📅</span>
-                            <div class="info-text">
-                                <div class="info-label">Fecha</div>
-                                <div class="info-value">{{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</div>
+                        <!-- Productos del pedido -->
+                        <div class="order-items-preview">
+                            <strong>📦 Productos ({{ pedido.items.count }}):</strong>
+                            {% for item in pedido.items.all %}
+                            <div class="order-item-preview">
+                                <span>{{ item.producto.nombre }}</span>
+                                <span>{{ item.cantidad }}x ${{ item.precio_unitario|floatformat:0 }}</span>
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
                     
-                    <div class="pedido-actions">
-                        <a href="/cliente/pedido/{{ pedido.id }}/" class="btn btn-primary">
-                            👁️ Ver Detalle
-                        </a>
+                    <div class="order-footer">
+                        <div class="order-total">${{ pedido.total|floatformat:0 }}</div>
+                        <div class="order-actions">
+                            <!-- BOTÓN CHAT PARA CLIENTE - CÓDIGO CORREGIDO -->
+                            <div class="chat-notification">
+                                <button class="btn-action btn-chat" 
+                                        onclick="abrirChat({{ pedido.id }})"
+                                        title="Chatear con {{ pedido.negocio.nombre }}">
+                                    <span>💬</span>
+                                    Contactar Comerciante
+                                    {% if pedido.mensajes_no_leidos > 0 %}
+                                    <div class="notification-dot"></div>
+                                    {% endif %}
+                                </button>
+                            </div>
+                            
+                            <button class="btn-action btn-secondary" 
+                                    onclick="verDetallePedido({{ pedido.id }})">
+                                <span>👁️</span>
+                                Ver Detalle
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
-                    <h2>No tienes pedidos aún</h2>
-                    <p style="color: #666; margin-top: 10px;">Comienza a comprar en nuestros negocios</p>
-                    <a href="/cliente/dashboard/" class="btn btn-primary" style="max-width: 300px; margin: 20px auto 0;">
-                        🛒 Ir de Compras
+                    <h3>No hay pedidos registrados</h3>
+                    <p>¡Realiza tu primer pedido y aparecerá aquí!</p>
+                    <a href="/productos/" class="nav-btn" style="margin-top: 15px;">
+                        🛒 Ir a Comprar
                     </a>
                 </div>
             {% endif %}
         </div>
     </div>
+
+    <script>
+        function abrirChat(pedidoId) {
+            window.open(`/chat/pedido/${pedidoId}/`, '_blank', 'width=800,height=700');
+        }
+        
+        function verDetallePedido(pedidoId) {
+            window.location.href = `/cliente/pedidos/${pedidoId}/`;
+        }
+        
+        // Auto-actualizar cada 60 segundos para ver mensajes nuevos
+        document.addEventListener('DOMContentLoaded', function() {
+            setInterval(() => {
+                window.location.reload();
+            }, 60000);
+        });
+    </script>
 </body>
 </html>

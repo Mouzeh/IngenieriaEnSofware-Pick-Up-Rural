@@ -34,7 +34,12 @@ INSTALLED_APPS = [
     'notificaciones',
     'pagos',
     'carrito', 
+    'administracion',
+    'solicitudes', 
     
+    'chat',           # 
+    'fidelizacion',   # 
+
     # Third party apps
     'rest_framework',
     'corsheaders',

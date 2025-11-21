@@ -42,7 +42,38 @@
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+        }
+        
+        /* ✅ ESTILOS PARA BOTÓN MIS PEDIDOS */
+        .btn-pedidos {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-pedidos:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Indicador pequeño para mensajes no leídos */
+        .notification-dot-small {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            margin-left: 5px;
+            animation: pulse 2s infinite;
         }
         
         .cart-icon {
@@ -514,6 +545,16 @@
                 max-width: 100%;
                 margin: 0;
             }
+            
+            .user-menu {
+                gap: 10px;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
@@ -526,6 +567,12 @@
                 <p style="font-size: 0.9em; opacity: 0.9;">Bienvenido, {{ user.get_full_name|default:user.username }}</p>
             </div>
             <div class="user-menu">
+                <!-- ✅ BOTÓN MIS PEDIDOS CON CHAT - URL CORREGIDA -->
+                <button class="btn-pedidos" onclick="window.location.href='/cliente/mis-pedidos/'">
+                    📋 Mis Pedidos
+                    <span class="notification-dot-small" id="pedidosNotification" style="display: none;"></span>
+                </button>
+                
                 <div class="cart-icon" onclick="openCart()">
                     🛒
                     <span class="cart-badge" id="cartBadge">0</span>
@@ -581,6 +628,24 @@
         let selectedStore = null;
         let allProducts = [];
         let cartData = null;
+        
+        // Agrega esta función para verificar mensajes no leídos
+        async function checkUnreadMessages() {
+            try {
+                const response = await fetch('/chat/api/estadisticas/');
+                const data = await response.json();
+                
+                if (data.mensajes_no_leidos > 0) {
+                    document.getElementById('pedidosNotification').style.display = 'inline-block';
+                } else {
+                    document.getElementById('pedidosNotification').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Si la API no existe, ocultar el indicador
+                document.getElementById('pedidosNotification').style.display = 'none';
+            }
+        }
         
         // Cargar tiendas al inicio
         async function loadStores() {
@@ -960,6 +1025,10 @@
         // Cargar tiendas al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             loadStores();
+            checkUnreadMessages();
+            
+            // Actualizar cada 30 segundos
+            setInterval(checkUnreadMessages, 30000);
         });
     </script>
     

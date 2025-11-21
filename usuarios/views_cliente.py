@@ -41,7 +41,22 @@ def mis_pedidos(request):
     if request.user.tipo_usuario != 'cliente':
         return redirect('/comerciante/dashboard/')
     
-    pedidos = Pedido.objects.filter(cliente=request.user).order_by('-fecha_pedido')
+    pedidos = Pedido.objects.filter(cliente=request.user).select_related(
+        'negocio'
+    ).prefetch_related(
+        'items__producto',
+        'conversacion__mensajes'
+    ).order_by('-fecha_pedido')
+    
+    # Contar mensajes no leídos para cada pedido
+    for pedido in pedidos:
+        if hasattr(pedido, 'conversacion'):
+            pedido.mensajes_no_leidos = pedido.conversacion.mensajes.filter(
+                leido=False,
+                usuario=pedido.negocio.propietario  # Mensajes del comerciante no leídos
+            ).count()
+        else:
+            pedido.mensajes_no_leidos = 0
     
     return render(request, 'cliente/mis_pedidos.html', {
         'pedidos': pedidos
