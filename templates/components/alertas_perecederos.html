@@ -1,0 +1,45 @@
+<!-- Alertas para productos perecederos en checkout -->
+<div class="alertas-perecederos">
+    {% for item in carrito.items.all %}
+        {% if item.producto.es_perecedero %}
+        <div class="alert alert-warning alerta-perecedero" data-producto-id="{{ item.producto.id }}">
+            <div class="d-flex align-items-center">
+                <i class="fas 
+                    {% if item.producto.tipo_almacenamiento == 'refrigerado' %}fa-snowflake
+                    {% elif item.producto.tipo_almacenamiento == 'congelado' %}fa-icicles
+                    {% elif item.producto.tipo_almacenamiento == 'fresco' %}fa-leaf
+                    {% else %}fa-thermometer-half{% endif %} 
+                    me-2"></i>
+                <div>
+                    <strong>Producto que requiere cuidado especial:</strong>
+                    {{ item.producto.nombre }} - 
+                    <span class="badge bg-warning text-dark">
+                        {{ item.producto.get_tipo_almacenamiento_display }}
+                    </span>
+                    {% if item.producto.temperatura_ideal %}
+                        <small class="text-muted">({{ item.producto.temperatura_ideal }}°C ideal)</small>
+                    {% endif %}
+                </div>
+            </div>
+            {% if item.producto.requiere_embalaje_especial %}
+            <div class="mt-1">
+                <small>📦 Requiere embalaje especial para transporte</small>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<style>
+.alerta-perecedero {
+    border-left: 4px solid #ffc107;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+</style>

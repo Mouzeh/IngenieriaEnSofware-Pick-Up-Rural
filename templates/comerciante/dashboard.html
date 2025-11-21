@@ -357,6 +357,71 @@
             font-size: 0.9em;
         }
         
+        /* NUEVOS ESTILOS PARA PRODUCTOS PERECEDEROS */
+        .perecedero-alert {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+            animation: pulse 2s infinite;
+        }
+        
+        .perecedero-badge {
+            background: #f59e0b !important;
+            color: white !important;
+        }
+        
+        .urgente-alert {
+            border-left: 4px solid #dc2626;
+            background: #fef2f2;
+            animation: pulse-urgent 1s infinite;
+        }
+        
+        .urgente-badge {
+            background: #dc2626 !important;
+            color: white !important;
+        }
+        
+        .producto-tipo {
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 5px;
+        }
+        
+        .tipo-refrigerado {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .tipo-congelado {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .tipo-fresco {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes pulse-urgent {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -468,10 +533,84 @@
             
             <div class="stat-card">
                 <div class="stat-header">
-                    <span class="stat-icon">📦</span>
+                    <span class="stat-icon">🧊</span>
+                    {% if pedidos_prioritarios.count > 0 %}
+                    <span class="stat-trend trend-down">🚨</span>
+                    {% endif %}
                 </div>
-                <div class="stat-value">{{ stats.total_productos }}</div>
-                <div class="stat-label">Productos Activos</div>
+                <div class="stat-value">{{ pedidos_prioritarios.count }}</div>
+                <div class="stat-label">Pedidos con Perecederos</div>
+            </div>
+        </div>
+        
+        <!-- NUEVA SECCIÓN: Pedidos con Productos Perecederos -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">🧊 Pedidos con Productos Perecederos</h2>
+                <button class="btn-primary" onclick="window.location.href='/comerciante/pedidos/?filtro=perecederos'">
+                    Ver Todos
+                </button>
+            </div>
+            <div class="orders-list">
+                {% if pedidos_prioritarios %}
+                    {% for pedido in pedidos_prioritarios %}
+                    <div class="order-item {% if pedido.es_urgente %}urgente-alert{% else %}perecedero-alert{% endif %}">
+                        <div class="order-info">
+                            <div class="order-number">
+                                {{ pedido.numero_pedido }}
+                                <span class="badge {% if pedido.es_urgente %}urgente-badge{% else %}perecedero-badge{% endif %}">
+                                    {% if pedido.es_urgente %}🚨 URGENTE{% else %}🧊 PRIORITARIO{% endif %}
+                                </span>
+                            </div>
+                            <div class="order-details">
+                                👤 {{ pedido.cliente.get_full_name|default:pedido.cliente.username }} | 
+                                💰 ${{ pedido.total|floatformat:0 }} | 
+                                📅 {{ pedido.fecha_pedido|date:"d/m/Y H:i" }} |
+                                ⏱️ Hace {{ pedido.fecha_pedido|timesince }}
+                            </div>
+                            <!-- CORREGIDO: Usar el campo real en lugar de la propiedad -->
+                            <div class="order-items-preview">
+                                {% for item in pedido.items.all %}
+                                    {% if item.producto.tipo_almacenamiento != 'ambiente' %}
+                                    <span class="producto-tipo tipo-{{ item.producto.tipo_almacenamiento }}">
+                                        {{ item.cantidad }}x {{ item.producto.nombre }} 
+                                        ({{ item.producto.get_tipo_almacenamiento_display }})
+                                        {% if item.producto.temperatura_ideal %}
+                                        🌡️{{ item.producto.temperatura_ideal }}°C
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% if pedido.notas_internas %}
+                            <div class="order-items-preview" style="background: #fff3cd; border-left: 3px solid #ffc107;">
+                                <strong>📝 Nota Interna:</strong> {{ pedido.notas_internas }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="order-status status-{{ pedido.estado }}">
+                                {{ pedido.get_estado_display }}
+                            </span>
+                            <div class="order-actions">
+                                <button class="btn-action btn-view" onclick="verPedido({{ pedido.id }})">
+                                    Ver
+                                </button>
+                                {% if pedido.estado != 'completado' and pedido.estado != 'cancelado' %}
+                                <button class="btn-action btn-update" onclick="actualizarEstado({{ pedido.id }})">
+                                    Actualizar
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <p>No hay pedidos con productos perecederos pendientes</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
         
@@ -542,6 +681,12 @@
                     <div class="stock-item">
                         <div class="stock-name">{{ producto.nombre }}</div>
                         <div class="stock-count">Stock: {{ producto.stock }} unidad{{ producto.stock|pluralize:"es" }}</div>
+                        <!-- CORREGIDO: Usar el campo real -->
+                        {% if producto.tipo_almacenamiento != 'ambiente' %}
+                        <div class="stock-count">
+                            🧊 {{ producto.get_tipo_almacenamiento_display }}
+                        </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 {% else %}
@@ -563,11 +708,18 @@
             window.location.href = `/comerciante/pedidos/${id}/`;
         }
         
-        // Actualizar datos cada 60 segundos
+        // Actualizar datos cada 60 segundos (especialmente importante para perecederos)
         document.addEventListener('DOMContentLoaded', function() {
             setInterval(() => {
                 window.location.reload();
             }, 60000);
+            
+            // Agregar sonido de alerta para pedidos urgentes
+            const pedidosUrgentes = document.querySelectorAll('.urgente-alert');
+            if (pedidosUrgentes.length > 0) {
+                // Podrías agregar una notificación de sonido aquí
+                console.log('🚨 Pedidos urgentes detectados:', pedidosUrgentes.length);
+            }
         });
     </script>
 </body>
